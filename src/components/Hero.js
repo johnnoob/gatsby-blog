@@ -17,7 +17,7 @@ const Hero = () => {
           <h1 className="text-4xl font-bold leading-normal max-md:text-3xl">
             Javascript科技新知你知不知，很好玩喔！
           </h1>
-          <p className="text-lg leading-normal text-gray-600 mt-3 max-md:mt-2 max-md:text-md">
+          <p className="text-lg leading-normal text-gray-600 mt-3 max-md:mt-2 max-md:text-base">
             JavaScript
             是一種腳本，也能稱它為程式語言，可以讓你在網頁中實現出複雜的功能。當網頁不只呈現靜態的內容，另外提供了像是：內容即時更新、地圖交動...
           </p>
