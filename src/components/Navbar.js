@@ -7,8 +7,8 @@ import { BsEnvelope } from "react-icons/bs";
 
 const Navbar = () => {
   return (
-    <header className="mx-auto absolute w-full">
-      <nav className="mx-auto py-5 px-5 lg:px-20 lg:max-w-6xl flex justify-between items-center">
+    <header className="absolute w-full">
+      <nav className="mx-auto py-4 px-5 lg:px-20 lg:max-w-6xl flex justify-between items-center">
         <Link to="/">
           <StaticImage
             src="../images/Navbar/blog.png"
@@ -16,14 +16,14 @@ const Navbar = () => {
             width={100}
           />
         </Link>
-        <div className="flex justify-between items-center gap-4">
+        <div className="flex justify-between items-center gap-4 max-sm:hidden">
           <ul className="text-md flex justify-center items-center gap-1 text-gray-800">
             {navlinks.map((link, index) => {
               return (
                 <>
                   <li
                     key={link.href}
-                    className="rounded-md px-3 py-2 hover:bg-gray-100"
+                    className="rounded-md px-3 py-2 hover:bg-gray-200"
                   >
                     <Link to={link.href}>{link.label}</Link>
                   </li>

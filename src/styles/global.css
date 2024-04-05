@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Festive&family=Noto+Sans+TC:wght@100..900&family=Orbitron:wght@600&display=swap");
+
+@layer components {
+    .hero-section-container {
+        @apply mx-auto py-5 max-w-5xl
+    }
+    .section-container {
+        @apply mx-auto max-md:px-5 py-5 max-w-5xl
+    }
+    .section-title {
+        @apply mb-1 text-3xl font-bold max-md:text-2xl
+    }
+}
+
+body {
+    font-family: "Noto Sans TC",
+        sans-serif;
+}
