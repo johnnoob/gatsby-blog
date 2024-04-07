@@ -3,12 +3,12 @@ import { StaticImage } from "gatsby-plugin-image";
 import { Link } from "gatsby";
 import { navlinks } from "../constants/link";
 import Button from "./Button";
-import { BsEnvelope } from "react-icons/bs";
+import { BsEnvelope, BsList } from "react-icons/bs";
 
 const Navbar = () => {
   return (
-    <header className="absolute w-full">
-      <nav className="mx-auto py-4 px-5 lg:px-20 lg:max-w-6xl flex justify-between items-center">
+    <header className="padding-x py-6 absolute z-10 w-full bg">
+      <nav className="flex justify-between items-center">
         <Link to="/">
           <StaticImage
             src="../images/Navbar/blog.png"
@@ -16,7 +16,7 @@ const Navbar = () => {
             width={100}
           />
         </Link>
-        <div className="flex justify-between items-center gap-4 max-sm:hidden">
+        <div className="flex justify-between items-center gap-4 max-lg:hidden">
           <ul className="text-md flex justify-center items-center gap-1 text-gray-800">
             {navlinks.map((link, index) => {
               return (
@@ -39,6 +39,11 @@ const Navbar = () => {
             icon={<BsEnvelope size={20} />}
             isIconRight={true}
           />
+        </div>
+        <div className="lg:hidden">
+          <button>
+            <BsList size={35} />
+          </button>
         </div>
       </nav>
     </header>

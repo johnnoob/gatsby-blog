@@ -5,7 +5,7 @@ import { StaticImage } from "gatsby-plugin-image";
 
 const Hero = () => {
   return (
-    <section id="hero" className="section mt-14 max-md:mt-6 ">
+    <section id="hero" className="">
       <div className="hero-section-container">
         <div className="relative shadow-md max-md:shadow-none bg-orange-100 flex justify-between rounded-lg gap-3  max-md:flex-col-reverse max-md:justify-center max-md:w-full max-md:pb-3 max-md:rounded-none">
           <div className="rounded-xl w-3/5 px-8 md:py-8 max-md:w-full max-md:px-3">

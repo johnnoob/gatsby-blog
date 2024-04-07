@@ -4,29 +4,21 @@ export const socialLinks = [
   {
     site: "facebook",
     url: "facebook",
-    image: <FaFacebook size={30} />,
-    bgColor: "text-slate-100",
-    hover: "hover:text-slate-600",
+    icon: <FaFacebook size={30} />,
   },
   {
     site: "ig",
     url: "ig",
-    image: <FaInstagram size={30} />,
-    bgColor: "text-slate-100",
-    hover: "hover:text-slate-300",
+    icon: <FaInstagram size={30} />,
   },
   {
     site: "twitter",
     url: "twitter",
-    image: <FaXTwitter size={30} />,
-    bgColor: "text-slate-100",
-    hover: "hover:text-slate-300",
+    icon: <FaXTwitter size={30} />,
   },
   {
     site: "github",
     url: "github",
-    image: <FaGithub size={30} />,
-    bgColor: "text-slate-100",
-    hover: "hover:text-blue-300",
+    icon: <FaGithub size={30} />,
   },
 ];

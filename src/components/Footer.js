@@ -6,28 +6,27 @@ import { SiGatsby } from "react-icons/si";
 const Footer = () => {
   const now = new Date();
   const year = now.getFullYear();
+
   return (
-    <section className="bg-orange-500 pt-8 pb-5 flex-col justify-center">
-      <div className="section-container pt-0">
+    <footer className="bg-orange-500 padding-x p-8 w-full">
+      <div className="flex flex-col justify-center items-center gap-4">
         <StaticImage src="../images/quote.png" alt="quote" />
-        <h1 className="mt-3 text-xl text-white text-center max-md:text-sm">
-          - Albert Einstein
-        </h1>
-        <ul className="mt-5 flex items-center justify-center gap-2">
-          {socialLinks.map(({ site, url, image, bgColor, hover }) => (
-            <li key={site} className={`${bgColor} ${hover}`}>
-              <a href={url}>{image}</a>
+        <ul className="flex items-center justify-center gap-2 text-slate-200">
+          {socialLinks.map(({ site, url, icon }) => (
+            <li key={site} className="hover:text-slate-600">
+              <a href={url}>{icon}</a>
             </li>
           ))}
         </ul>
-        <div className="text-white text-lg flex flex-col items-center mt-5 max-md:text-sm">
+
+        <div className="text-white text-lg flex flex-col items-center max-md:text-sm">
           <p>
             Made with Gatsby <SiGatsby className="inline-block" /> in Taiwan
           </p>
-          <p>&copy; John Hu {year}</p>
+          <p>&copy; Hu's Company, Ltd. {year}</p>
         </div>
       </div>
-    </section>
+    </footer>
   );
 };
 
