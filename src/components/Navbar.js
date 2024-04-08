@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { StaticImage } from "gatsby-plugin-image";
 import { Link } from "gatsby";
 import { navlinks } from "../constants/link";
@@ -6,9 +6,30 @@ import Button from "./Button";
 import { BsEnvelope, BsList } from "react-icons/bs";
 
 const Navbar = () => {
+  const [scrollDirection, setScrollDirection] = useState("");
+  const [lastScroll, setLastScroll] = useState(0);
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScroll = window.scrollY;
+      if (currentScroll <= 0) {
+        setScrollDirection(null);
+        return;
+      }
+      const newDirection =
+        currentScroll > lastScroll ? "scroll-down" : "scroll-up";
+      if (newDirection !== scrollDirection) {
+        setScrollDirection(newDirection);
+      }
+      setLastScroll(currentScroll);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [scrollDirection, lastScroll]);
   return (
-    <header className="padding-x py-6 absolute z-10 w-full bg">
-      <nav className="flex justify-between items-center">
+    <header
+      className={`fixed z-10 w-full padding-x transition-all ${scrollDirection}`}
+    >
+      <nav className="flex justify-between items-center py-6 padding-x rounded-b-2xl bg-white mx-auto">
         <Link to="/">
           <StaticImage
             src="../images/Navbar/blog.png"

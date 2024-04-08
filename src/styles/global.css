@@ -27,6 +27,12 @@ body {
     .section-title {
         @apply mb-1 text-3xl font-semibold max-md:text-2xl
     }
+    .scroll-down {
+        transform: translate3d(0, -100%, 0);
+    }
+    .scroll-up {
+        transform: translate3d(0, 0, 0);
+    }
 }
 
 @layer utilities {
