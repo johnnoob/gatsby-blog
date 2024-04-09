@@ -8,7 +8,7 @@ const Footer = () => {
   const year = now.getFullYear();
 
   return (
-    <footer className="bg-orange-500 padding-x p-8 w-full">
+    <footer className="bg-black padding-x p-8 w-full">
       <div className="flex flex-col justify-center items-center gap-4">
         <StaticImage src="../images/quote.png" alt="quote" />
         <ul className="flex items-center justify-center gap-2 text-slate-200">
