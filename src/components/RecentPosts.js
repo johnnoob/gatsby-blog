@@ -31,20 +31,15 @@ const RecentPosts = () => {
     />
   ));
   return (
-    <section className="section">
-      <div className="section-container">
-        <div className="flex justify-between items-center mb-2">
-          <h1 className="section-title">近期文章</h1>
-          <Link to="/all-posts" className="text-orange-600 md:text-lg">
-            顯示全部
-          </Link>
-        </div>
-        <hr className=" border-b-1 mb-8 max-md:hidden" />
-        <div className="grid grid-cols-3  gap-8 max-md:grid-cols-1 max-md:gap-2">
-          {postCards}
-        </div>
+    <div className="">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl font-semibold">近期文章</h1>
+        <Button isBlack={true}>觀看全部</Button>
       </div>
-    </section>
+      <div className="grid grid-cols-3  gap-8 max-md:grid-cols-1 max-md:gap-2">
+        {postCards}
+      </div>
+    </div>
   );
 };
 

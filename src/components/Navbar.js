@@ -29,7 +29,7 @@ const Navbar = () => {
     <header
       className={`fixed z-10 w-full padding-x transition-all ${scrollDirection}`}
     >
-      <nav className="flex justify-between items-center py-6 padding-x rounded-b-2xl bg-white mx-auto">
+      <nav className="flex justify-between items-center py-6 padding-x rounded-b-2xl bg-white mx-auto shadow-md border-[1px] border-t-transparent border-gray-300">
         <Link to="/">
           <StaticImage
             src="../images/Navbar/blog.png"
@@ -56,10 +56,12 @@ const Navbar = () => {
             })}
           </ul>
           <Button
-            label="訂閱"
             icon={<BsEnvelope size={20} />}
             isIconRight={true}
-          />
+            isBlack={true}
+          >
+            訂閱
+          </Button>
         </div>
         <div className="lg:hidden">
           <button>

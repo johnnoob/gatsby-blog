@@ -11,13 +11,13 @@ const IndexPage = () => {
   console.log(__dirname);
   return (
     <Layout>
-      <section className="bg-red-200">
+      <section>
         <Introduction />
       </section>
       {/* <section className="padding-x">
         <Hero />
       </section> */}
-      <section>
+      <section className="padding-x py-6">
         <RecentPosts />
       </section>
     </Layout>
