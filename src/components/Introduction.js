@@ -14,10 +14,10 @@ const Introduction = () => {
             <span>最新文章</span> | March 29, 2022
           </div>
           <div className="mb-6">
-            <h1 className="text-5xl font-semibold mb-3 leading-normal">
+            <h1 className="text-5xl max-lg:text-2xl font-semibold mb-3 leading-normal">
               Javascript科技新知你知不知，很好玩喔！
             </h1>
-            <p className="text-gray-300 text-lg">
+            <p className="text-gray-300 text-lg max-lg:text-base">
               JavaScript
               是一種腳本，也能稱它為程式語言，可以讓你在網頁中實現出複雜的功能。當網頁不只呈現靜態的內容，另外提供了像是：內容即時更新、地圖交動...
             </p>
@@ -34,7 +34,7 @@ const Introduction = () => {
           </div>
         </div>
       </div>
-      <div className=" max-lg:aspect-[16/10] max-lg:h-[400px] max-lg:w-full bg-red-500">
+      <div className="max-lg:aspect-[16/9] max-lg:h-[350px] max-lg:w-full bg-red-500">
         <StaticImage
           src="../images/me.jpg"
           alt="latest"
