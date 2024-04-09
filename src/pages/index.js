@@ -17,7 +17,7 @@ const IndexPage = () => {
       {/* <section className="padding-x">
         <Hero />
       </section> */}
-      <section className="padding-x py-6">
+      <section className="padding-x py-6 max-container">
         <RecentPosts />
       </section>
     </Layout>

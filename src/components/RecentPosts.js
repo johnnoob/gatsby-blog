@@ -33,7 +33,7 @@ const RecentPosts = () => {
   return (
     <div className="">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-semibold">近期文章</h1>
+        <h1 className="text-3xl font-bold">近期文章</h1>
         <Button isBlack={true}>觀看全部</Button>
       </div>
       <div className="grid grid-cols-3 gap-8 max-lg:grid-cols-1 max-lg:gap-4">

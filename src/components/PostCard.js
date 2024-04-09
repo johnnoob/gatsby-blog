@@ -18,11 +18,11 @@ const PostCard = ({ imageUrl, bgColor }) => {
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
           alt="post card image"
         />
-        <h3 className="absolute text-white text-lg top-4 opacity-90  bg-orange-500 pl-2 pr-3 py-1 rounded-r-lg max-lg:text-xs max-lg:top-2 max-lg:pr-2 max-lg:pl-1">
+        <h3 className="absolute text-white text-lg top-4 opacity-80  bg-black pl-2 pr-3 py-1 rounded-r-lg max-lg:text-xs max-lg:top-2 max-lg:pr-2 max-lg:pl-1">
           Python
         </h3>
       </div>
-      <div className=" flex-shrink">
+      <div>
         <div className="py-2 max-lg:pl-1 max-lg:py-0">
           <div className="flex justify-start items-center gap-2">
             <div className="flex items-center gap-1 text-gray-600">
@@ -33,15 +33,15 @@ const PostCard = ({ imageUrl, bgColor }) => {
               <StaticImage src="../images/person1.png" />
             </div>
           </div>
-          <h4 className="mt-1 font-semibold text-xl max-lg:text-base max-lg:mt-0">
+          <h4 className="mt-1 font-semibold text-lg max-lg:text-base max-lg:mt-0">
             多模態詠唱外掛模型，輕量靈活有效，IP-Adapter by Hu & Jun et al
           </h4>
-          <p className="mt-2 max-lg:hidden">
+          <p className="mt-1 max-lg:hidden">
             蘋果於 2024 年 3 月 8 日推出全新 iPhone 15
             系列手機，搭載A17仿生晶片、6.1 吋。
           </p>
         </div>
-        <div className="flex gap-3 mt-3 max-lg:hidden">
+        <div className="flex gap-3 mt-1 max-lg:hidden">
           <div className="rounded-full w-11 h-11 overflow-hidden">
             <StaticImage src="../images/person1.png" />
           </div>

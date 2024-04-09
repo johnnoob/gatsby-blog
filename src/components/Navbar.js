@@ -26,50 +26,52 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [scrollDirection, lastScroll]);
   return (
-    <header
-      className={`fixed z-10 w-full padding-x transition-all ${scrollDirection}`}
-    >
-      <nav className="flex justify-between items-center py-6 padding-x rounded-b-2xl bg-white mx-auto shadow-md border-[1px] border-t-transparent border-gray-300">
-        <Link to="/">
-          <StaticImage
-            src="../images/Navbar/blog.png"
-            alt="Blog Logo"
-            width={100}
-          />
-        </Link>
-        <div className="flex justify-between items-center gap-4 max-lg:hidden">
-          <ul className="text-md flex justify-center items-center gap-1 text-gray-800">
-            {navlinks.map((link, index) => {
-              return (
-                <>
-                  <li
-                    key={link.href}
-                    className="rounded-md px-3 py-2 hover:bg-gray-200"
-                  >
-                    <Link to={link.href}>{link.label}</Link>
-                  </li>
-                  {index === navlinks.length - 1 ? null : (
-                    <div className="h-7 border-l-[1px]"></div>
-                  )}
-                </>
-              );
-            })}
-          </ul>
-          <Button
-            icon={<BsEnvelope size={20} />}
-            isIconRight={true}
-            isBlack={true}
-          >
-            訂閱
-          </Button>
-        </div>
-        <div className="lg:hidden">
-          <button>
-            <BsList size={35} />
-          </button>
-        </div>
-      </nav>
-    </header>
+    <section className="fixed w-full z-10">
+      <header
+        className={`max-container padding-x transition-all ${scrollDirection}`}
+      >
+        <nav className="flex justify-between items-center py-6 padding-x rounded-b-2xl bg-white mx-auto shadow-md border-[1px] border-t-transparent border-gray-300">
+          <Link to="/">
+            <StaticImage
+              src="../images/Navbar/blog.png"
+              alt="Blog Logo"
+              width={100}
+            />
+          </Link>
+          <div className="flex justify-between items-center gap-4 max-lg:hidden">
+            <ul className="text-md flex justify-center items-center gap-1 text-gray-800">
+              {navlinks.map((link, index) => {
+                return (
+                  <>
+                    <li
+                      key={link.href}
+                      className="rounded-md px-3 py-2 hover:bg-gray-200"
+                    >
+                      <Link to={link.href}>{link.label}</Link>
+                    </li>
+                    {index === navlinks.length - 1 ? null : (
+                      <div className="h-7 border-l-[1px]"></div>
+                    )}
+                  </>
+                );
+              })}
+            </ul>
+            <Button
+              icon={<BsEnvelope size={20} />}
+              isIconRight={true}
+              isBlack={true}
+            >
+              訂閱
+            </Button>
+          </div>
+          <div className="lg:hidden">
+            <button>
+              <BsList size={35} />
+            </button>
+          </div>
+        </nav>
+      </header>
+    </section>
   );
 };
 

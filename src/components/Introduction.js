@@ -34,12 +34,12 @@ const Introduction = () => {
           </div>
         </div>
       </div>
-      <div className="h-full max-lg:h-[500px] bg-red-500 overflow-hidden">
+      <div className=" max-lg:aspect-[16/10] max-lg:h-[400px] max-lg:w-full bg-red-500">
         <StaticImage
           src="../images/me.jpg"
           alt="latest"
-          style={{ objectFit: "cover" }}
-          class="h-full"
+          style={{ width: "100%", height: "100%" }}
+          objectFit="cover"
         />
       </div>
     </section>
