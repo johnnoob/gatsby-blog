@@ -12,13 +12,13 @@ const PostCard = ({ imageUrl, bgColor }) => {
         className={`w-full h-full absolute hover:scale-110 -z-10 group-hover:scale-110 group-hover:transition-all group-hover:rounded-lg group-hover:opacity-20 opacity-0`}
         style={{ backgroundColor: `${bgColor}` }}
       ></div>
-      <div className="relative rounded-lg overflow-hidden aspect-[4/3] max-lg:aspect-[16/10] max-lg:max-w-28 bg-red-300">
+      <div className="relative rounded-lg overflow-hidden aspect-[4/3] max-lg:aspect-[16/10] max-lg:max-w-28">
         <GatsbyImage
           image={imageUrl}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
           alt="post card image"
         />
-        <h3 className="absolute text-white text-lg top-4 opacity-90  bg-orange-500 pl-2 pr-3 py-1 rounded-r-lg max-md:text-xs max-md:top-2 max-md:pr-2 max-md:pl-1">
+        <h3 className="absolute text-white text-lg top-4 opacity-90  bg-orange-500 pl-2 pr-3 py-1 rounded-r-lg max-lg:text-xs max-lg:top-2 max-lg:pr-2 max-lg:pl-1">
           Python
         </h3>
       </div>
