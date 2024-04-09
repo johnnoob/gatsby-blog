@@ -22,7 +22,6 @@ const RecentPosts = () => {
   `);
   console.log(data.allImageSharp.edges);
   const images = data.allImageSharp.edges.map((edge) => getImage(edge.node));
-  console.log(images);
   const postCards = images.map((imageUrl) => (
     <PostCard
       key={imageUrl.backgroundColor}
