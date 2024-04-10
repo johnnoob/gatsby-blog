@@ -3,6 +3,7 @@ import Button from "./Button";
 import PostCard from "./PostCardTopPosts";
 import { useStaticQuery, graphql, Link } from "gatsby";
 import { getImage } from "gatsby-plugin-image";
+import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 
 const TopPosts = () => {
   const data = useStaticQuery(graphql`
@@ -48,13 +49,23 @@ const TopPosts = () => {
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-10 gap-4 max-lg:flex max-lg:items-start max-lg:w-[2000px] bg-fuchsia-400">
-        <div className="bg-red-200 col-span-5 max-lg:col-span-1 grid">
-          {postCards[0]}
-        </div>
-        <div className="col-span-5 grid grid-rows-2 gap-4 max-lg:col-span-2 max-lg:grid-cols-2">
-          <div className="bg-green-200">{postCards[1]}</div>
-          <div className="bg-blue-200">{postCards[2]}</div>
+      <div className="w-full overflow-hidden relative">
+        <button className="bg-black text-white px-2 py-5 rounded-r-lg opacity-80 absolute top-1/2 z-10 left-0 -translate-y-1/2">
+          <BsChevronLeft size={20} />
+        </button>
+        <button className="bg-black text-white px-2 py-5 rounded-l-lg opacity-80 absolute top-1/2 z-10 right-0 -translate-y-1/2">
+          <BsChevronRight size={20} />
+        </button>
+        <div className=" bg-fuchsia-400 grid grid-cols-2 grid-rows-2 gap-3 max-lg:grid-cols-3 max-lg:grid-rows-1 max-lg:w-[280%]">
+          <div className="col-span-1 row-span-2 max-lg:row-span-1 max-lg:col-span-1">
+            {postCards[0]}
+          </div>
+          <div className="bg-green-200 col-span-1 row-span-1 max-lg:row-span-1 max-lg:col-span-1">
+            {postCards[1]}
+          </div>
+          <div className="bg-blue-200 col-span-1 row-span-1 max-lg:row-span-1 max-lg:col-span-1">
+            {postCards[2]}
+          </div>
         </div>
       </div>
     </>

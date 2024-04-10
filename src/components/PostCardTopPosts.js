@@ -5,25 +5,20 @@ import { BsCalendar4Week } from "react-icons/bs";
 const PostCard = ({ imageUrl, bgColor, isImageLeft }) => {
   return (
     <div
-      className={`${
-        isImageLeft ? "flex justify-start items-start gap-1" : ""
-      } relative group h-full max-lg:block`}
+      className={`flex gap-2 ${
+        isImageLeft ? "justify-start items-center " : "flex-col"
+      } relative group max-lg:flex-col`}
     >
       <div
-        className={`w-full h-full absolute hover:scale-110 -z-10 group-hover:scale-110 group-hover:transition-all group-hover:rounded-lg group-hover:opacity-20 opacity-0`}
-        style={{ backgroundColor: `${bgColor}` }}
-      ></div>
-      {/* ${isImageLeft ? "" : ""} */}
-      <div
-        className={`relative rounded-lg overflow-hidden ${
+        className={`relative rounded-lg overflow-hidden max-lg:h-[200px] ${
           isImageLeft
-            ? "aspect-[1/1] max-h-[250px] bg-slate-400"
-            : "aspect-[16/9] max-w-full bg-slate-400 max-lg: max-lg:max-h-[400px]"
+            ? "h-[215px] w-[220px] bg-slate-400 max-lg:w-auto"
+            : "h-[280px]  bg-slate-400"
         }`}
       >
         <GatsbyImage
           image={imageUrl}
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          className="w-full h-full"
           alt="post card image"
         />
         <h3 className="absolute text-white text-lg top-4 opacity-80  bg-black pl-2 pr-3 py-1 rounded-r-lg max-lg:text-xs max-lg:top-2 max-lg:pr-2 max-lg:pl-1">
@@ -37,6 +32,9 @@ const PostCard = ({ imageUrl, bgColor, isImageLeft }) => {
               <BsCalendar4Week className="text-lg max-md:hidden" />
               <p className="text-sm">March 29, 2024</p>
             </div>
+            <div className="rounded-full w-6 h-6 overflow-hidden lg:hidden">
+              <StaticImage src="../images/person1.png" />
+            </div>
           </div>
           <h4 className="mt-1 font-semibold text-lg max-lg:text-base max-lg:mt-0">
             多模態詠唱外掛模型，輕量靈活有效，IP-Adapter by Hu & Jun et al
@@ -46,7 +44,7 @@ const PostCard = ({ imageUrl, bgColor, isImageLeft }) => {
             系列手機，搭載A17仿生晶片、6.1 吋。
           </p>
         </div>
-        <div className="flex gap-3 mt-3">
+        <div className="flex gap-3 mt-0 bg-orange-400 max-lg:hidden">
           <div className="rounded-full w-11 h-11 overflow-hidden">
             <StaticImage src="../images/person1.png" />
           </div>
