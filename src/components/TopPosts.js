@@ -33,10 +33,6 @@ const TopPosts = () => {
     );
   });
   const [cardIndex, setCardIndex] = useState(0);
-  const [translateClass, setTranslateClass] = useState("");
-  useEffect(() => {
-    setTranslateClass(`-translate-x-${1 * cardIndex}/3`);
-  }, [cardIndex]);
   const handleNextCard = () => {
     if (cardIndex < postCards.length - 1) {
       setCardIndex((cardIndex) => cardIndex + 1);
@@ -75,7 +71,8 @@ const TopPosts = () => {
           <BsChevronRight size={20} />
         </button>
         <div
-          className={`grid grid-cols-2 grid-rows-2 gap-3 max-lg:grid-cols-3 max-lg:gap-0 max-lg:grid-rows-1 max-lg:w-[300%] max-lg: max-lg:${translateClass} transition`}
+          className={`grid grid-cols-2 grid-rows-2 gap-3 max-lg:grid-cols-3 max-lg:gap-0 max-lg:grid-rows-1 max-lg:w-[300%] transition`}
+          style={{ transform: `translateX(${-33.3333333 * cardIndex}%)` }}
         >
           <div className="col-span-1 row-span-2 max-lg:row-span-1 max-lg:col-span-1">
             {postCards[0]}
