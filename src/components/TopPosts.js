@@ -71,9 +71,9 @@ const TopPosts = () => {
           <BsChevronRight size={20} />
         </button>
         <div
-          className={`grid grid-cols-2 grid-rows-2 gap-3 max-lg:grid-cols-3 max-lg:gap-0 max-lg:grid-rows-1 max-lg:w-[300%] -translate-x-${
+          className={`grid grid-cols-2 grid-rows-2 gap-3 max-lg:grid-cols-3 max-lg:gap-0 max-lg:grid-rows-1 max-lg:w-[300%] max-lg:-translate-x-${
             1 * cardIndex
-          }/3 transition-all`}
+          }/3 max-lg:transition-all`}
         >
           <div className="col-span-1 row-span-2 max-lg:row-span-1 max-lg:col-span-1">
             {postCards[0]}
