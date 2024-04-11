@@ -47,6 +47,17 @@ const TopPosts = () => {
       setCardIndex((cardIndex) => cardIndex - 1);
     }
   };
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      const width = window.innerWidth;
+      if (width >= 1024) {
+        setCardIndex(0);
+      }
+      return () => {
+        window.removeEventListener("resize");
+      };
+    });
+  });
   return (
     <section>
       <div>
@@ -71,7 +82,7 @@ const TopPosts = () => {
           <BsChevronRight size={20} />
         </button>
         <div
-          className={`grid grid-cols-2 grid-rows-2 gap-3 max-lg:grid-cols-3 max-lg:gap-0 max-lg:grid-rows-1 max-lg:w-[300%] transition`}
+          className={`grid grid-cols-2 grid-rows-2 gap-3 transition max-lg:grid-cols-3 max-lg:gap-0 max-lg:grid-rows-1 max-lg:w-[300%] `}
           style={{ transform: `translateX(${-33.3333333 * cardIndex}%)` }}
         >
           <div className="col-span-1 row-span-2 max-lg:row-span-1 max-lg:col-span-1">
