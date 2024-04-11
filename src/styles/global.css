@@ -33,6 +33,11 @@ body {
     .scroll-up {
         transform: translate3d(0, 0, 0);
     }
+    .transition-custom {
+        transition-property: all;
+        transition-timing-function: cubic-bezier(0.4, 0.1, 0.2, 1);
+        transition-duration: 150ms;
+    }
 }
 
 @layer utilities {
@@ -67,5 +72,6 @@ body {
     .info-text {
         @apply text-slate-gray text-lg leading-7;
     }
+    
 }
 

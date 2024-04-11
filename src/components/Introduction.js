@@ -6,9 +6,9 @@ const Introduction = () => {
   return (
     <section
       id="introduction"
-      className=" bg-black text-white flex justify-between items-center max-lg:flex-col-reverse max-lg:justify-start max-lg:h-5/6 gap-4 h-5/6"
+      className=" bg-black text-white flex justify-center max-lg:flex-col-reverse max-lg:justify-start max-lg:h-5/6 gap-4 h-5/6"
     >
-      <div className="flex flex-col justify-center gap-8 padding-y padding-l max-lg:padding-r max-lg:pt-1 max-lg:pb-6 max-lg:gap-4">
+      <div className="flex flex-col justify-center gap-8 pt-[200px] padding-b padding-l max-lg:padding-r max-lg:pt-1 max-lg:pb-6 max-lg:gap-4">
         <div className="flex flex-col justify-center items-start flex-1">
           <div className="mb-2">
             <span>最新文章</span> | March 29, 2022
@@ -34,7 +34,7 @@ const Introduction = () => {
           </div>
         </div>
       </div>
-      <div className="max-lg:aspect-[16/9] max-lg:h-[350px] max-lg:w-full bg-red-500">
+      <div className="max-lg:h-[350px] max-lg:w-auto h-[730px]">
         <StaticImage
           src="../images/me.jpg"
           alt="latest"

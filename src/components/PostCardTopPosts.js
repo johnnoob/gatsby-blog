@@ -11,9 +11,7 @@ const PostCard = ({ imageUrl, bgColor, isImageLeft }) => {
     >
       <div
         className={`relative rounded-lg overflow-hidden max-lg:h-[200px] ${
-          isImageLeft
-            ? "h-[215px] w-[220px] bg-slate-400 max-lg:w-auto"
-            : "h-[280px]  bg-slate-400"
+          isImageLeft ? "h-[215px] w-[220px] max-lg:w-auto" : "h-[280px]"
         }`}
       >
         <GatsbyImage
@@ -44,7 +42,7 @@ const PostCard = ({ imageUrl, bgColor, isImageLeft }) => {
             系列手機，搭載A17仿生晶片、6.1 吋。
           </p>
         </div>
-        <div className="flex gap-3 mt-0 bg-orange-400 max-lg:hidden">
+        <div className="flex gap-3 mt-0 max-lg:hidden">
           <div className="rounded-full w-11 h-11 overflow-hidden">
             <StaticImage src="../images/person1.png" />
           </div>
