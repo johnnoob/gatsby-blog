@@ -48,7 +48,7 @@ const TopPosts = () => {
     }
   };
   return (
-    <>
+    <section>
       <div>
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">精選文章</h1>
@@ -71,9 +71,10 @@ const TopPosts = () => {
           <BsChevronRight size={20} />
         </button>
         <div
-          className={`grid grid-cols-2 grid-rows-2 gap-3 max-lg:grid-cols-3 max-lg:gap-0 max-lg:grid-rows-1 max-lg:w-[300%] max-lg:-translate-x-${
+          className={`grid grid-cols-2 grid-rows-2 gap-3 max-lg:grid-cols-3 max-lg:gap-0 max-lg:grid-rows-1 max-lg:w-[300%] max-lg:-translate-x-${(
             1 * cardIndex
-          }/3 max-lg:transition-all`}
+          ).toString()}/3 max-lg:transition-all`}
+          style={{}}
         >
           <div className="col-span-1 row-span-2 max-lg:row-span-1 max-lg:col-span-1">
             {postCards[0]}
@@ -86,7 +87,7 @@ const TopPosts = () => {
           </div>
         </div>
       </div>
-    </>
+    </section>
   );
 };
 

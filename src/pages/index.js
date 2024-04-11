@@ -15,7 +15,7 @@ const IndexPage = () => {
       <section>
         <Introduction />
       </section>
-      <section className="max-container padding">
+      <section className="max-container padding-x py-12 sm:py-4">
         <TopPosts />
       </section>
       {/* <section className="padding-x">
