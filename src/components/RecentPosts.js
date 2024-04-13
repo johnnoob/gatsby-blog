@@ -1,12 +1,31 @@
 import React, { useState, useEffect } from "react";
 import Button from "./Button";
 import PostCard from "./PostCard";
+import Pagination from "./Pagination";
 import { useStaticQuery, graphql, Link } from "gatsby";
 import { getImage } from "gatsby-plugin-image";
 
 const RecentPosts = () => {
-  const numOfPagePosts = 3;
   const [page, setPage] = useState(1);
+  const [numOfPagePosts, setNumOfPagePosts] = useState(4);
+  const bgNumOfPagePosts = 6;
+  const smNumOfPagePosts = 4;
+
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      const width = window.innerWidth;
+      setPage(1);
+      if (width >= 1024) {
+        setNumOfPagePosts(bgNumOfPagePosts);
+      } else {
+        setNumOfPagePosts(smNumOfPagePosts);
+      }
+      return () => {
+        window.removeEventListener("resize");
+      };
+    });
+  });
+
   const data = useStaticQuery(graphql`
     query {
       allImageSharp {
@@ -19,17 +38,10 @@ const RecentPosts = () => {
     }
   `);
   const posts = data.allImageSharp.edges;
-  const numOfPosts = data.allImageSharp.edges.length;
-  const numOfPages = Math.ceil(numOfPosts / numOfPagePosts);
-  const pagesArray = Array.from({ length: numOfPages }, (_, i) => i + 1);
   const pagePosts = posts.slice(
     numOfPagePosts * (page - 1),
     numOfPagePosts * page
   );
-  console.log(pagePosts);
-  const handleChangePage = (page) => {
-    setPage(page);
-  };
   const images = pagePosts.map((edge) => getImage(edge.node));
   const postCards = images.map((imageUrl, index) => (
     <PostCard
@@ -38,7 +50,6 @@ const RecentPosts = () => {
       bgColor={imageUrl.backgroundColor}
     />
   ));
-  console.log(postCards.length);
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
@@ -48,17 +59,13 @@ const RecentPosts = () => {
       <div className="grid grid-cols-3 gap-8 max-lg:grid-cols-1 max-lg:gap-4">
         {postCards}
       </div>
-      <div>
-        {pagesArray.map((page, index) => {
-          return (
-            <>
-              <button key={index} onClick={() => handleChangePage(index + 1)}>
-                {index + 1}
-              </button>
-            </>
-          );
-        })}
-      </div>
+      <hr className="mt-6" />
+      <Pagination
+        posts={posts}
+        page={page}
+        setPage={setPage}
+        numOfPagePosts={numOfPagePosts}
+      />
     </div>
   );
 };

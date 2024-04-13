@@ -27,10 +27,8 @@ const Navbar = () => {
   }, [scrollDirection, lastScroll]);
   return (
     <section className="fixed w-full z-10">
-      <header
-        className={`max-container padding-x transition-all ${scrollDirection}`}
-      >
-        <nav className="flex justify-between items-center py-6 padding-x rounded-b-2xl bg-white mx-auto shadow-md border-[1px] border-t-transparent border-gray-300">
+      <header className={`max-container transition-all ${scrollDirection}`}>
+        <nav className="flex justify-between items-center py-3 padding-x bg-white mx-auto border-[1px] border-t-transparent border-gray-200">
           <Link to="/">
             <StaticImage
               src="../images/Navbar/blog.png"
