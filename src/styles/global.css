@@ -21,6 +21,10 @@ body {
             max-width: 1280px;
             margin: 0 auto;
         }
+    .post-max-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
     .input {
          @apply sm:flex-1 max-sm:w-full text-base leading-normal text-slate-gray pl-5 max-sm:p-5 outline-none sm:border-none border max-sm:border-slate-gray max-sm:rounded-full;
           }
@@ -35,6 +39,10 @@ body {
     }
     .pre-next-button {
         @apply flex justify-center items-center font-semibold
+    }
+    a.anchor {
+        /* @apply absolute top-1/2 -translate-y-1/2; */
+        fill:red
     }
 }
 
