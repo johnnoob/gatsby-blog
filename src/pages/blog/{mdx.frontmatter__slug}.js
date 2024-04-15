@@ -29,33 +29,32 @@ const BlogPost = ({ data, children }) => {
     const titles = document.querySelectorAll("h1, h2");
     const initialIsIntersectingMap = {};
     titles.forEach((title) => {
-      initialIsIntersectingMap[title.id] = false;
+      let titleId = title.id.toLowerCase();
+      initialIsIntersectingMap[`#${titleId}`] = false;
     });
     setIsIntersectingMap(initialIsIntersectingMap);
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
         if (entry.isIntersecting) {
-          console.log(`${entry.target.id}進入畫面`);
           setIsIntersectingMap((prevIsIntersectingMap) => {
             return {
               ...prevIsIntersectingMap,
-              [entry.target.id]: true,
+              [`#${entry.target.id.toLowerCase()}`]: true,
             };
           });
         } else {
-          console.log(`${entry.target.id}離開畫面`);
           setIsIntersectingMap((prevIsIntersectingMap) => {
             return {
               ...prevIsIntersectingMap,
-              [entry.target.id]: false,
+              [`#${entry.target.id.toLowerCase()}`]: false,
             };
           });
         }
       },
       {
         root: null,
-        rootMargin: "-200px",
+        rootMargin: "-100px",
         threshold: 0.5,
       }
     );
@@ -95,7 +94,16 @@ const BlogPost = ({ data, children }) => {
                             )}
                           </button>
                         )}
-                        <a href={h1Url}>{h1}</a>
+                        <a
+                          href={h1Url}
+                          className={
+                            isIntersectingMap && isIntersectingMap[h1Url]
+                              ? "text-blue-300"
+                              : "text-black"
+                          }
+                        >
+                          {h1}
+                        </a>
                       </div>
                       {h2s && (
                         <ul className="">
@@ -105,6 +113,10 @@ const BlogPost = ({ data, children }) => {
                                 key={h2}
                                 className={`${
                                   isOpenMap[index] ? "" : "hidden"
+                                } ${
+                                  isIntersectingMap && isIntersectingMap[h2Url]
+                                    ? "text-blue-300"
+                                    : "text-black"
                                 } ml-[7px] pl-[16px] py-[2px] border-l-[1px] border-slate-300 hover:border-black hover:text-black`}
                               >
                                 <a href={h2Url}>{h2}</a>
