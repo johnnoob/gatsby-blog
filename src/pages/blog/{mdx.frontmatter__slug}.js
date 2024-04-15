@@ -81,11 +81,11 @@ const BlogPost = ({ data, children }) => {
               </div>
               <ul className="flex flex-col text-gray-500">
                 {contents.map((content, index) => {
-                  const { title: h1, url: h1Url, items: h2s = [] } = content;
+                  const { title: h1, url: h1Url, items: h2s = null } = content;
                   return (
                     <li key={h1} className="border-gray-300 py-1">
                       <div className="flex justify-start items-center gap-2 pb-1">
-                        {h2s && (
+                        {h2s ? (
                           <button onClick={() => handleH1Open(index)}>
                             {isOpenMap[index] ? (
                               <FaAngleDown size={15} />
@@ -93,6 +93,8 @@ const BlogPost = ({ data, children }) => {
                               <FaAngleRight size={15} />
                             )}
                           </button>
+                        ) : (
+                          <div className="w-[15px]"></div>
                         )}
                         <a
                           href={h1Url}
