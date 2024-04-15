@@ -7,10 +7,10 @@ const h1 = (props) => (
   />
 );
 const h2 = (props) => (
-  <h1 className=" text-xl leading-relaxed font-semibold" {...props} />
+  <h2 className=" text-xl leading-relaxed font-semibold" {...props} />
 );
 const h3 = (props) => (
-  <h1 className=" text-lg leading-relaxed font-semibold" {...props} />
+  <h3 className=" text-lg leading-relaxed font-semibold" {...props} />
 );
 const p = (props) => <p className=" leading-relaxed font-light" {...props} />;
 

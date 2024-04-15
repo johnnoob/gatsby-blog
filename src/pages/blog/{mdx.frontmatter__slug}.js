@@ -8,7 +8,6 @@ import { BsListTask, BsFillTagFill } from "react-icons/bs";
 import { useState } from "react";
 import { MDXProviderComponents } from "../../components/MDXProviderComponents.js";
 import { FaAngleRight, FaAngleDown } from "react-icons/fa6";
-import Button from "../../components/Button.js";
 
 const BlogPost = ({ data, children }) => {
   const { date, slug, tags, hero_image } = data.mdx.frontmatter;
@@ -16,35 +15,57 @@ const BlogPost = ({ data, children }) => {
   const heroImage = getImage(hero_image.childrenImageSharp[0]);
   const { items: contents } = data.mdx.tableOfContents;
 
-  let initialIsOpenMap = {};
+  const initialIsOpenMap = {};
   contents.forEach((_, index) => {
     initialIsOpenMap[index] = false;
   });
-
   const [isOpenMap, setIsOpenMap] = useState(initialIsOpenMap);
-  // const [current]
   const handleH1Open = (index) => {
     setIsOpenMap((isOpenMap) => ({ ...isOpenMap, [index]: !isOpenMap[index] }));
   };
 
-  const contentsRef = useRef(null);
-  function getMap() {
-    if (!contentsRef.current) {
-      // Initialize the Map on first usage.
-      contentsRef.current = new Map();
-    }
-    return contentsRef.current;
-  }
-  // function scrollToId(itemId) {
-  //   const map = getMap();
-  //   const node = map.get(itemId);
-  //   node.scrollIntoView({
-  //     behavior: "smooth",
-  //     block: "nearest",
-  //     inline: "center",
-  //   });
-  // }
-  console.log(contentsRef);
+  const [isIntersectingMap, setIsIntersectingMap] = useState();
+  useEffect(() => {
+    const titles = document.querySelectorAll("h1, h2");
+    const initialIsIntersectingMap = {};
+    titles.forEach((title) => {
+      initialIsIntersectingMap[title.id] = false;
+    });
+    setIsIntersectingMap(initialIsIntersectingMap);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting) {
+          console.log(`${entry.target.id}進入畫面`);
+          setIsIntersectingMap((prevIsIntersectingMap) => {
+            return {
+              ...prevIsIntersectingMap,
+              [entry.target.id]: true,
+            };
+          });
+        } else {
+          console.log(`${entry.target.id}離開畫面`);
+          setIsIntersectingMap((prevIsIntersectingMap) => {
+            return {
+              ...prevIsIntersectingMap,
+              [entry.target.id]: false,
+            };
+          });
+        }
+      },
+      {
+        root: null,
+        rootMargin: "-200px",
+        threshold: 0.5,
+      }
+    );
+    titles.forEach((title) => {
+      observer.observe(title);
+    });
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <Layout>
@@ -74,19 +95,7 @@ const BlogPost = ({ data, children }) => {
                             )}
                           </button>
                         )}
-                        <a
-                          href={h1Url}
-                          ref={(node) => {
-                            const map = getMap();
-                            if (node) {
-                              map.set(index, node);
-                            } else {
-                              map.delete(index);
-                            }
-                          }}
-                        >
-                          {h1}
-                        </a>
+                        <a href={h1Url}>{h1}</a>
                       </div>
                       {h2s && (
                         <ul className="">
