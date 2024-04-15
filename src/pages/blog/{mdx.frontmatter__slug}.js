@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useEffect } from "react";
 import Layout from "../../components/layout.js";
 import Seo from "../../components/Seo.js";
 import { graphql, Link } from "gatsby";
@@ -17,7 +17,7 @@ const BlogPost = ({ data, children }) => {
 
   const initialIsOpenMap = {};
   contents.forEach((_, index) => {
-    initialIsOpenMap[index] = false;
+    initialIsOpenMap[index] = true;
   });
   const [isOpenMap, setIsOpenMap] = useState(initialIsOpenMap);
   const handleH1Open = (index) => {
@@ -36,31 +36,27 @@ const BlogPost = ({ data, children }) => {
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        if (entry.isIntersecting) {
-          setIsIntersectingMap((prevIsIntersectingMap) => {
-            return {
-              ...prevIsIntersectingMap,
-              [`#${entry.target.id.toLowerCase()}`]: true,
-            };
+        const titleId = `#${entry.target.id.toLowerCase()}`;
+        setIsIntersectingMap((prevIsIntersectingMap) => {
+          const prevIsIntersectingMapCopy = { ...prevIsIntersectingMap };
+          const isIntersectingMapKeys = Object.keys(prevIsIntersectingMapCopy);
+          isIntersectingMapKeys.forEach((key) => {
+            prevIsIntersectingMapCopy[key] = false;
           });
-        } else {
-          setIsIntersectingMap((prevIsIntersectingMap) => {
-            return {
-              ...prevIsIntersectingMap,
-              [`#${entry.target.id.toLowerCase()}`]: false,
-            };
-          });
-        }
+
+          return { ...prevIsIntersectingMapCopy, [titleId]: true };
+        });
       },
       {
         root: null,
-        rootMargin: "-100px",
-        threshold: 0.5,
+        rootMargin: "-160px",
+        threshold: 1,
       }
     );
     titles.forEach((title) => {
       observer.observe(title);
     });
+
     return () => {
       observer.disconnect();
     };
