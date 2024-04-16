@@ -1,17 +1,13 @@
 import React from "react";
-import Navbar from "../components/Navbar";
-import Hero from "../components/Hero";
 import Introduction from "../components/Introduction";
 import TopPosts from "../components/TopPosts";
 import RecentPosts from "../components/RecentPosts";
-import Footer from "../components/Footer";
 import Layout from "../components/layout";
 import Seo from "../components/Seo";
 
 const IndexPage = () => {
-  console.log(__dirname);
   return (
-    <Layout>
+    <Layout isBlogPost={false}>
       <section>
         <Introduction />
       </section>

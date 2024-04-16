@@ -9,7 +9,14 @@ import { MDXProviderComponents } from "../../components/MDXProviderComponents.js
 import { FaAngleRight, FaAngleDown } from "react-icons/fa6";
 
 const BlogPost = ({ data, children }) => {
-  const { date, slug, tags, hero_image } = data.mdx.frontmatter;
+  const {
+    title: pageTitle,
+    date,
+    slug,
+    tags,
+    hero_image,
+  } = data.mdx.frontmatter;
+  console.log(pageTitle);
   const heroImage = getImage(hero_image.childrenImageSharp[0]);
   const { items: contents } = data.mdx.tableOfContents;
 
@@ -64,97 +71,105 @@ const BlogPost = ({ data, children }) => {
   }, []);
 
   return (
-    <Layout>
+    <Layout isBlogPost={true}>
       <section className="pt-[300px] post-max-container">
-        <section className="padding-r flex justify-start items-start gap-10 max-lg:flex-col max-lg:padding-l">
-          <aside className="flex flex-col items-start gap-3 text-base sticky max-lg:relative top-[100px] basis-[300px] max-lg:w-full max-lg:top-0">
-            <div className={`w-full`}>
-              <div className="relative flex justify-center mb-4">
-                <div className="flex justify-center items-center px-[20px] gap-1 bg-white">
-                  <BsListTask size={20} />
-                  <h4 className="tracking-wider">目錄</h4>
+        <div></div>
+        <div>
+          <div className="padding-r flex justify-start items-start gap-10 max-lg:flex-col max-lg:padding-l">
+            <aside className="flex flex-col items-start gap-3 text-base sticky max-lg:relative top-[100px] basis-[300px] max-lg:w-full max-lg:top-0">
+              <div className={`w-full`}>
+                <div className="relative flex justify-center mb-4">
+                  <div className="flex justify-center items-center px-[20px] gap-1 bg-white">
+                    <BsListTask size={20} />
+                    <h4 className="tracking-wider">目錄</h4>
+                  </div>
+                  <div className="absolute top-1/2 h-[2px] w-full bg-black -translate-y-1/2 -z-10"></div>
                 </div>
-                <div className="absolute top-1/2 h-[2px] w-full bg-black -translate-y-1/2 -z-10"></div>
-              </div>
-              <ul className="flex flex-col text-gray-500">
-                {contents.map((content, index) => {
-                  const { title: h1, url: h1Url, items: h2s = null } = content;
-                  return (
-                    <li key={h1} className="border-gray-300 py-1">
-                      <div className="flex justify-start items-center gap-2 pb-1">
-                        {h2s ? (
-                          <button onClick={() => handleH1Open(index)}>
-                            {isOpenMap[index] ? (
-                              <FaAngleDown size={15} />
-                            ) : (
-                              <FaAngleRight size={15} />
-                            )}
-                          </button>
-                        ) : (
-                          <div className="w-[15px]"></div>
+                <ul className="flex flex-col text-gray-500">
+                  {contents.map((content, index) => {
+                    const {
+                      title: h1,
+                      url: h1Url,
+                      items: h2s = null,
+                    } = content;
+                    return (
+                      <li key={h1} className="border-gray-300 py-1">
+                        <div className="flex justify-start items-center gap-2 pb-1">
+                          {h2s ? (
+                            <button onClick={() => handleH1Open(index)}>
+                              {isOpenMap[index] ? (
+                                <FaAngleDown size={15} />
+                              ) : (
+                                <FaAngleRight size={15} />
+                              )}
+                            </button>
+                          ) : (
+                            <div className="w-[15px]"></div>
+                          )}
+                          <a
+                            href={h1Url}
+                            className={
+                              isIntersectingMap && isIntersectingMap[h1Url]
+                                ? "text-blue-300"
+                                : "text-black"
+                            }
+                          >
+                            {h1}
+                          </a>
+                        </div>
+                        {h2s && (
+                          <ul className="">
+                            {h2s.map(({ title: h2, url: h2Url }) => {
+                              return (
+                                <li
+                                  key={h2}
+                                  className={`${
+                                    isOpenMap[index] ? "" : "hidden"
+                                  } ${
+                                    isIntersectingMap &&
+                                    isIntersectingMap[h2Url]
+                                      ? "text-blue-300"
+                                      : "text-black"
+                                  } ml-[7px] pl-[16px] py-[2px] border-l-[1px] border-slate-300`}
+                                >
+                                  <a href={h2Url}>{h2}</a>
+                                </li>
+                              );
+                            })}
+                          </ul>
                         )}
-                        <a
-                          href={h1Url}
-                          className={
-                            isIntersectingMap && isIntersectingMap[h1Url]
-                              ? "text-blue-300"
-                              : "text-black"
-                          }
-                        >
-                          {h1}
-                        </a>
-                      </div>
-                      {h2s && (
-                        <ul className="">
-                          {h2s.map(({ title: h2, url: h2Url }) => {
-                            return (
-                              <li
-                                key={h2}
-                                className={`${
-                                  isOpenMap[index] ? "" : "hidden"
-                                } ${
-                                  isIntersectingMap && isIntersectingMap[h2Url]
-                                    ? "text-blue-300"
-                                    : "text-black"
-                                } ml-[7px] pl-[16px] py-[2px] border-l-[1px] border-slate-300`}
-                              >
-                                <a href={h2Url}>{h2}</a>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-            <div className="w-full">
-              <div className="relative flex justify-center mb-4">
-                <div className="flex justify-center items-center bg-white px-[20px] gap-1">
-                  <BsFillTagFill size={20} />
-                  <h4 className=" tracking-wider">文章標籤</h4>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+              <div className="w-full">
+                <div className="relative flex justify-center mb-4">
+                  <div className="flex justify-center items-center bg-white px-[20px] gap-1">
+                    <BsFillTagFill size={20} />
+                    <h4 className=" tracking-wider">文章標籤</h4>
+                  </div>
+                  <div className="absolute top-1/2 h-[2px] w-full bg-black -translate-y-1/2 -z-10"></div>
                 </div>
-                <div className="absolute top-1/2 h-[2px] w-full bg-black -translate-y-1/2 -z-10"></div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {tags.map((tag) => (
+                    <Link
+                      to={`/${tag}`}
+                      className="px-3 py-1 bg-slate-200 rounded-md"
+                    >
+                      {tag}
+                    </Link>
+                  ))}
+                </div>
               </div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {tags.map((tag) => (
-                  <Link
-                    to={`/${tag}`}
-                    className="px-3 py-1 bg-slate-200 rounded-md"
-                  >
-                    {tag}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </aside>
-          <article className="flex-1">
-            <MDXProvider components={MDXProviderComponents}>
-              {children}
-            </MDXProvider>
-          </article>
-        </section>
+            </aside>
+            <article className="flex-1">
+              <MDXProvider components={MDXProviderComponents}>
+                {children}
+              </MDXProvider>
+            </article>
+          </div>
+        </div>
       </section>
     </Layout>
   );
@@ -172,6 +187,8 @@ export const query = graphql`
             gatsbyImageData
           }
         }
+        author
+        title
         tags
       }
     }

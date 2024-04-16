@@ -5,7 +5,7 @@ import { navlinks } from "../constants/link";
 import Button from "./Button";
 import { BsEnvelope, BsList } from "react-icons/bs";
 
-const Navbar = () => {
+const Navbar = ({ isBlogPost }) => {
   // const [scrollDirection, setScrollDirection] = useState("");
   // const [lastScroll, setLastScroll] = useState(0);
   // useEffect(() => {
@@ -27,16 +27,27 @@ const Navbar = () => {
   // }, [scrollDirection, lastScroll]);
   const navbarRef = useRef(null);
   const [progressWidth, setProgressWidth] = useState(0);
+  const [isShowProgress, setIsShowProgress] = useState(false);
   useEffect(() => {
+    if (!isBlogPost) return;
     const navbarWidth = navbarRef.current.offsetWidth;
+    const article = document.querySelector("article");
+    const articleTop = article.offsetTop;
     window.addEventListener(
       "scroll",
       () => {
         const scrollY = window.scrollY;
         const pageHeight = document.documentElement.scrollHeight;
         const windowHeight = window.innerHeight;
-        const scrollRatio =
-          Math.round(((scrollY + windowHeight) / pageHeight) * 100) / 100;
+        if (scrollY >= articleTop - 200) {
+          setIsShowProgress(true);
+        } else {
+          setIsShowProgress(false);
+        }
+        const scrollRatio = Math.max(
+          0,
+          Math.round(((scrollY + windowHeight) / pageHeight) * 100) / 100
+        );
         const scrollProgressWidth = navbarWidth * scrollRatio;
         setProgressWidth(scrollProgressWidth);
       },
@@ -47,7 +58,7 @@ const Navbar = () => {
   });
 
   return (
-    <section className="fixed w-full z-10 bg-white" ref={navbarRef}>
+    <section className="fixed w-full z-10 bg-white shadow-md" ref={navbarRef}>
       {/* <header className={`max-container transition-all ${scrollDirection}`}> */}
       <header className={`max-container transition-all`}>
         <nav className="flex justify-between items-center py-3 padding-x mx-auto">
@@ -91,9 +102,15 @@ const Navbar = () => {
           </div>
         </nav>
       </header>
-      <div className="bg-blue-200">
+      <div
+        className={`transition-all ${
+          isShowProgress ? "bg-blue-200" : "bg-transparent"
+        }`}
+      >
         <div
-          className="bg-blue-500 transition-all z-10"
+          className={`${
+            isShowProgress ? "bg-blue-500" : "bg-transparent"
+          } z-10`}
           style={{ width: progressWidth, height: 4 }}
         ></div>
       </div>
