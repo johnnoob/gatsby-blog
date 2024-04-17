@@ -3,11 +3,12 @@ import Layout from "../../components/layout.js";
 import Seo from "../../components/Seo.js";
 import { graphql, Link } from "gatsby";
 import { MDXProvider } from "@mdx-js/react";
-import { GatsbyImage, getImage, StaticImage } from "gatsby-plugin-image";
+import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import { BsListTask, BsFillTagFill } from "react-icons/bs";
 import { MDXProviderComponents } from "../../components/MDXProviderComponents.js";
 import { FaAngleRight, FaAngleDown } from "react-icons/fa6";
 import { BsCalendar4Week } from "react-icons/bs";
+import authors from "../../constants/authors.js";
 
 const BlogPost = ({ data, children }) => {
   const {
@@ -16,11 +17,14 @@ const BlogPost = ({ data, children }) => {
     slug,
     tags,
     hero_image,
-    author,
+    author: authorName,
   } = data.mdx.frontmatter;
-  console.log(pageTitle);
+  const authors = data.allContentfulAuthor.nodes;
+
   const heroImage = getImage(hero_image.childrenImageSharp[0]);
   const { items: contents } = data.mdx.tableOfContents;
+  const author = authors.find((author) => author.name === authorName);
+  const authorImage = getImage(author.image);
 
   // title h1的開合功能
   const initialIsOpenMap = {};
@@ -40,26 +44,30 @@ const BlogPost = ({ data, children }) => {
       let titleId = title.id.toLowerCase();
       initialIsIntersectingMap[`#${titleId}`] = false;
     });
-    setIsIntersectingMap(initialIsIntersectingMap);
+    // setIsIntersectingMap(initialIsIntersectingMap);
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
         // 將id轉為小寫以跟url匹配
         const titleId = `#${entry.target.id.toLowerCase()}`;
-        setIsIntersectingMap((prevIsIntersectingMap) => {
-          const prevIsIntersectingMapCopy = { ...prevIsIntersectingMap };
-          // 將其他title的碰撞情形都設為false，只有最後碰撞到的title才為true
-          const isIntersectingMapKeys = Object.keys(prevIsIntersectingMapCopy);
-          isIntersectingMapKeys.forEach((key) => {
-            prevIsIntersectingMapCopy[key] = false;
+        if (entry.isIntersecting) {
+          setIsIntersectingMap((prevIsIntersectingMap) => {
+            const prevIsIntersectingMapCopy = { ...prevIsIntersectingMap };
+            // 將其他title的碰撞情形都設為false，只有最後碰撞到的title才為true
+            const isIntersectingMapKeys = Object.keys(
+              prevIsIntersectingMapCopy
+            );
+            isIntersectingMapKeys.forEach((key) => {
+              prevIsIntersectingMapCopy[key] = false;
+            });
+            return { ...prevIsIntersectingMapCopy, [titleId]: true };
           });
-          return { ...prevIsIntersectingMapCopy, [titleId]: true };
-        });
+        }
       },
       {
         root: null,
         // rootMargin為目標元素(預設為視窗)的上右下左，可用px或%表示
-        rootMargin: "0px 0px -90% 0px",
+        rootMargin: "0px 0px -80% 0px",
         threshold: 1,
       }
     );
@@ -82,10 +90,10 @@ const BlogPost = ({ data, children }) => {
           <div className="flex justify-center items-center py-7 gap-8">
             <div className="flex items-center gap-2">
               <GatsbyImage
-                image={heroImage}
-                className="rounded-full w-10 h-10"
+                image={authorImage}
+                className="w-[35px] h-[35px] rounded-full"
               />
-              <p>{author}</p>
+              <p>{author.name}</p>
             </div>
             <div className="flex items-center gap-1 text-gray-600">
               <BsCalendar4Week size={20} />
@@ -219,6 +227,17 @@ export const query = graphql`
         author
         title
         tags
+      }
+    }
+    allContentfulAuthor {
+      nodes {
+        name
+        description {
+          description
+        }
+        image {
+          gatsbyImageData
+        }
       }
     }
   }

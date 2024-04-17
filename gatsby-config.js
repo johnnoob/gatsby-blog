@@ -1,6 +1,9 @@
 /**
  * @type {import('gatsby').GatsbyConfig}
  */
+require("dotenv").config({
+  path: `.env.${process.env.NODE_ENV}`,
+});
 module.exports = {
   siteMetadata: {
     title: `Gatsby Blog`,
@@ -8,6 +11,14 @@ module.exports = {
   },
   plugins: [
     "gatsby-plugin-postcss",
+    {
+      resolve: `gatsby-source-contentful`,
+      options: {
+        spaceId: `zu7mvllbia1d`,
+        // Learn about environment variables: https://gatsby.dev/env-vars
+        accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
+      },
+    },
     `gatsby-plugin-image`,
     `gatsby-plugin-sharp`,
     `gatsby-transformer-sharp`,
