@@ -3,10 +3,11 @@ import Layout from "../../components/layout.js";
 import Seo from "../../components/Seo.js";
 import { graphql, Link } from "gatsby";
 import { MDXProvider } from "@mdx-js/react";
-import { GatsbyImage, getImage } from "gatsby-plugin-image";
+import { GatsbyImage, getImage, StaticImage } from "gatsby-plugin-image";
 import { BsListTask, BsFillTagFill } from "react-icons/bs";
 import { MDXProviderComponents } from "../../components/MDXProviderComponents.js";
 import { FaAngleRight, FaAngleDown } from "react-icons/fa6";
+import { BsCalendar4Week } from "react-icons/bs";
 
 const BlogPost = ({ data, children }) => {
   const {
@@ -15,6 +16,7 @@ const BlogPost = ({ data, children }) => {
     slug,
     tags,
     hero_image,
+    author,
   } = data.mdx.frontmatter;
   console.log(pageTitle);
   const heroImage = getImage(hero_image.childrenImageSharp[0]);
@@ -72,11 +74,38 @@ const BlogPost = ({ data, children }) => {
 
   return (
     <Layout isBlogPost={true}>
-      <section className="pt-[300px] post-max-container">
-        <div></div>
+      <section className="pt-[80px] post-max-container padding-x">
+        <div className="w-full">
+          <h1 className="text-4xl text-center font-bold leading-relaxed">
+            {pageTitle}
+          </h1>
+          <div className="flex justify-center items-center py-7 gap-8">
+            <div className="flex items-center gap-2">
+              <GatsbyImage
+                image={heroImage}
+                className="rounded-full w-10 h-10"
+              />
+              <p>{author}</p>
+            </div>
+            <div className="flex items-center gap-1 text-gray-600">
+              <BsCalendar4Week size={20} />
+              <p>{date}</p>
+            </div>
+            <div className="flex gap-2">
+              {tags.map((tag) => (
+                <Link
+                  to={`/${tag}`}
+                  className="px-3 py-1 bg-slate-200 rounded-md"
+                >
+                  {tag}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
         <div>
-          <div className="padding-r flex justify-start items-start gap-10 max-lg:flex-col max-lg:padding-l">
-            <aside className="flex flex-col items-start gap-3 text-base sticky max-lg:relative top-[100px] basis-[300px] max-lg:w-full max-lg:top-0">
+          <div className="flex justify-start items-start gap-10 max-lg:flex-col max-lg:padding-l">
+            <aside className="flex flex-col items-start gap-3 text-base sticky max-lg:relative top-[100px] basis-[250px] max-lg:w-full max-lg:top-0">
               <div className={`w-full`}>
                 <div className="relative flex justify-center mb-4">
                   <div className="flex justify-center items-center px-[20px] gap-1 bg-white">

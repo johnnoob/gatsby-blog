@@ -44,22 +44,17 @@ const Navbar = ({ isBlogPost }) => {
         } else {
           setIsShowProgress(false);
         }
-        const scrollRatio = Math.max(
-          0,
-          Math.round(((scrollY + windowHeight) / pageHeight) * 100) / 100
-        );
+        const scrollRatio =
+          Math.round(((scrollY + windowHeight) / pageHeight) * 100) / 100;
         const scrollProgressWidth = navbarWidth * scrollRatio;
         setProgressWidth(scrollProgressWidth);
       },
       []
     );
-
-    // console.log(pageHeight);
   });
 
   return (
-    <section className="fixed w-full z-10 bg-white shadow-md" ref={navbarRef}>
-      {/* <header className={`max-container transition-all ${scrollDirection}`}> */}
+    <section className="fixed w-full z-10 bg-white shadow-sm" ref={navbarRef}>
       <header className={`max-container transition-all`}>
         <nav className="flex justify-between items-center py-3 padding-x mx-auto">
           <Link to="/">
