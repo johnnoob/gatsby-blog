@@ -12,8 +12,7 @@
 }
 
 body {
-    font-family: "Noto Sans TC",
-        sans-serif;
+    font-family: "Noto Sans TC", sans-serif;
 }
 
 @layer components {
@@ -77,6 +76,9 @@ body {
 
     .info-text {
         @apply text-slate-gray text-lg leading-7;
+    }
+    .text-gray-p{
+        @apply text-[#535150]
     }
     
 }
