@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Button from "./Button";
-import PostCard from "./PostCard";
+import PostCard from "./PostCardModified";
 import Pagination from "./Pagination";
 import { useStaticQuery, graphql, Link } from "gatsby";
 import { getImage } from "gatsby-plugin-image";

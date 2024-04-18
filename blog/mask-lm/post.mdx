@@ -7,10 +7,16 @@ tags: ["java", "python"]
 author: "David Vanguard"
 ---
 
-```python{numberLines: true}
-name = "John"
-def helloWorld(name):
-  print('Hello' + name)
+```python{1-3,6-7,9}
+# Python program to check if the input number is odd or even.
+# A number is even if division by 2 gives a remainder of 0.
+# If the remainder is 1, it is an odd number.
+
+num = int(input("Enter a number: "))
+if (num % 2) == 0:
+   print("{0} is Even".format(num))
+else:
+   print("{0} is Odd".format(num))
 ```
 
 ![hero](/hero.png "hero")
@@ -76,12 +82,7 @@ backtick.fences('for blocks')
 
 
 
-```shell{outputLines: 2-10,12}
-def hello_world():
-  print("Hello, world!")
 
-hello_world()
-```
 ```javascript
 function hello_world(){
     console.log("Hello, world!");

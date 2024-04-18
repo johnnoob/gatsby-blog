@@ -1,5 +1,4 @@
 import React from "react";
-import Example from "./Example";
 
 const h1 = (props) => (
   <h1 className="text-3xl leading-relaxed font-semibold py-2" {...props} />
@@ -38,10 +37,8 @@ const blockquote = ({ children, ...props }) => (
     <p>{children}</p>
   </blockquote>
 );
-const pre = ({ children, ...props }) => <Example />;
 
 export const MDXProviderComponents = {
-  pre: Example,
   h1: h1,
   h2: h2,
   h3: h3,

@@ -16,6 +16,11 @@ body {
     font-family: "Noto Sans TC", sans-serif;
 }
 
+.gatsby-highlight {
+    background-color: #fdf6e3;
+    @apply relative px-3 pt-2 pb-6 my-2 rounded-md overflow-hidden
+}
+
 .gatsby-highlight-code-line {
     background-color: #feb;
     display: block;
@@ -26,22 +31,9 @@ body {
     border-left: 0.25em solid #f99;
 }
 
-/* Adjust the position of the line numbers */
-.gatsby-highlight {
-    background-color: #fdf6e3;
-    border-radius: 0.3em;
-    margin: 0.5em 0;
-    overflow: auto;
-    @apply relative px-2 pt-2 pb-1
-}
-.root {
-    --language-javascript: "JavaScript";
-    --language-python: "Python";
-    --language-html: "HTML";
-}
 .gatsby-highlight[data-language]::before {
     content: attr(data-language);
-    @apply bg-yellow-300 py-1 px-2 text-sm absolute z-10 top-0 left-7 rounded-b-md capitalize
+    @apply bg-yellow-300 py-1 px-2 text-sm absolute top-0 left-7 rounded-b-md capitalize
 }
 
 .gatsby-highlight pre[class*="language-"].line-numbers {
@@ -74,10 +66,6 @@ body {
     }
     .pre-next-button {
         @apply flex justify-center items-center font-semibold
-    }
-    a.anchor {
-        /* @apply absolute top-1/2 -translate-y-1/2; */
-        fill:red
     }
 }
 
@@ -116,6 +104,13 @@ body {
     .text-gray-p{
         @apply text-[#535150]
     }
-    
+    .post-card-shadow {
+        box-shadow: 0px 0px 15px 10px rgb(0 0 0 / 0.25);
+    }
+    .post-card-transition {
+        transition-property: all;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 400ms;
+    }
 }
 
