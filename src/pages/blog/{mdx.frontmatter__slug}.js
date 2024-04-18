@@ -8,7 +8,6 @@ import { BsListTask, BsFillTagFill } from "react-icons/bs";
 import { MDXProviderComponents } from "../../components/MDXProviderComponents.js";
 import { FaAngleRight, FaAngleDown } from "react-icons/fa6";
 import { BsCalendar4Week } from "react-icons/bs";
-import authors from "../../constants/authors.js";
 
 const BlogPost = ({ data, children }) => {
   const {
