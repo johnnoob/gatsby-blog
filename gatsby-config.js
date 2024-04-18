@@ -37,6 +37,7 @@ module.exports = {
               elements: [`h1`, `h2`, `h3`],
             },
           },
+          `gatsby-remark-prismjs`,
           `gatsby-remark-responsive-iframe`,
           {
             resolve: `gatsby-remark-images`,

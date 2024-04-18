@@ -51,5 +51,4 @@ export const MDXProviderComponents = {
   em: em,
   strong: strong,
   blockquote: blockquote,
-  pre: pre,
 };

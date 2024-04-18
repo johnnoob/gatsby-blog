@@ -11,8 +11,44 @@
     scroll-behavior: smooth;
 }
 
+
 body {
     font-family: "Noto Sans TC", sans-serif;
+}
+
+.gatsby-highlight-code-line {
+    background-color: #feb;
+    display: block;
+    margin-right: -1em;
+    margin-left: -1em;
+    padding-right: 1em;
+    padding-left: 0.75em;
+    border-left: 0.25em solid #f99;
+}
+
+/* Adjust the position of the line numbers */
+.gatsby-highlight {
+    background-color: #fdf6e3;
+    border-radius: 0.3em;
+    margin: 0.5em 0;
+    overflow: auto;
+    @apply relative px-2 pt-2 pb-1
+}
+.root {
+    --language-javascript: "JavaScript";
+    --language-python: "Python";
+    --language-html: "HTML";
+}
+.gatsby-highlight[data-language]::before {
+    content: attr(data-language);
+    @apply bg-yellow-300 py-1 px-2 text-sm absolute z-10 top-0 left-7 rounded-b-md capitalize
+}
+
+.gatsby-highlight pre[class*="language-"].line-numbers {
+    padding: 0;
+    padding-left: 2.8em;
+    overflow: initial;
+    @apply mt-8 ml-5
 }
 
 @layer components {
