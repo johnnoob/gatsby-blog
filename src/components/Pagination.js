@@ -19,9 +19,9 @@ const Pagination = ({ posts, page, setPage, numOfPagePosts }) => {
     }
   };
   return (
-    <div className="mt-6 flex justify-between items-center max-lg:justify-center">
+    <div className="mt-6 flex justify-between items-center max-sm:justify-center">
       <button
-        className="pre-next-button max-lg:hidden"
+        className="prev-next-button max-sm:hidden"
         onClick={handleChangePrevPage}
       >
         <BsArrowLeftShort size={20} />
@@ -43,7 +43,7 @@ const Pagination = ({ posts, page, setPage, numOfPagePosts }) => {
         })}
       </div>
       <button
-        className="pre-next-button max-lg:hidden"
+        className="prev-next-button max-sm:hidden"
         onClick={handleChangeNextPage}
       >
         Next

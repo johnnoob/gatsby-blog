@@ -8,18 +8,17 @@ const Footer = () => {
   const year = now.getFullYear();
 
   return (
-    <footer className="bg-black padding-x p-8 w-full">
+    <footer className="bg-black padding-x py-8 w-full">
       <div className="flex flex-col justify-center items-center gap-4">
         <StaticImage src="../images/quote.png" alt="quote" />
-        <ul className="flex items-center justify-center gap-2 text-slate-200">
+        <ul className="flex items-center justify-center gap-3 text-white">
           {socialLinks.map(({ site, url, icon }) => (
-            <li key={site} className="hover:text-slate-600">
+            <li key={site} className="hover:text-slate-300">
               <a href={url}>{icon}</a>
             </li>
           ))}
         </ul>
-
-        <div className="text-white text-lg flex flex-col items-center max-md:text-sm">
+        <div className="text-white flex flex-col items-center">
           <p>
             Made with Gatsby <SiGatsby className="inline-block" /> in Taiwan
           </p>

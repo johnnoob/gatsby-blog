@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Button from "./Button";
-import PostCard from "./PostCardTopPosts";
+import PostCard from "./TopPostsCardBig";
 import { useStaticQuery, graphql, Link } from "gatsby";
 import { getImage } from "gatsby-plugin-image";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";

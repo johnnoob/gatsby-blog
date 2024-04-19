@@ -2,23 +2,23 @@ import React, { useState, useEffect } from "react";
 import Button from "./Button";
 import PostCard from "./PostCardModified";
 import Pagination from "./Pagination";
-import { useStaticQuery, graphql, Link } from "gatsby";
+import { useStaticQuery, graphql } from "gatsby";
 import { getImage } from "gatsby-plugin-image";
 
 const RecentPosts = () => {
   const [page, setPage] = useState(1);
   const [numOfPagePosts, setNumOfPagePosts] = useState(4);
   const bgNumOfPagePosts = 6;
-  const smNumOfPagePosts = 4;
+  const maxMdNumOfPagePosts = 4;
 
   useEffect(() => {
     window.addEventListener("resize", () => {
-      const width = window.innerWidth;
+      const windowWidth = window.innerWidth;
       setPage(1);
-      if (width >= 1024) {
+      if (windowWidth >= 1024) {
         setNumOfPagePosts(bgNumOfPagePosts);
       } else {
-        setNumOfPagePosts(smNumOfPagePosts);
+        setNumOfPagePosts(maxMdNumOfPagePosts);
       }
       return () => {
         window.removeEventListener("resize");
@@ -53,10 +53,10 @@ const RecentPosts = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">近期文章</h1>
+        <h1 className="text-3xl font-bold tracking-wider">近期文章</h1>
         <Button isBlack={true}>觀看全部</Button>
       </div>
-      <div className="grid grid-cols-3 gap-8 max-lg:grid-cols-1 max-lg:gap-4">
+      <div className="grid grid-cols-3 gap-8 max-lg:grid-cols-2 max-sm:flex max-sm:flex-col max-sm:gap-2">
         {postCards}
       </div>
       <hr className="mt-6" />
