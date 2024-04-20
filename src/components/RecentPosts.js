@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Button from "./Button";
 import PostCard from "./PostCardModified";
 import Pagination from "./Pagination";
@@ -6,25 +6,34 @@ import { useStaticQuery, graphql } from "gatsby";
 import { getImage } from "gatsby-plugin-image";
 
 const RecentPosts = () => {
+  const initialWindowWidth = window.innerWidth;
   const [page, setPage] = useState(1);
-  const [numOfPagePosts, setNumOfPagePosts] = useState(4);
+  const [numOfPagePosts, setNumOfPagePosts] = useState(
+    initialWindowWidth >= 1024 ? 6 : 4
+  );
   const bgNumOfPagePosts = 6;
   const maxMdNumOfPagePosts = 4;
+  const isSmallDeviceRef = useRef(initialWindowWidth >= 1024 ? false : true);
 
   useEffect(() => {
-    window.addEventListener("resize", () => {
-      const windowWidth = window.innerWidth;
-      setPage(1);
-      if (windowWidth >= 1024) {
+    const handleResize = () => {
+      const currentWindowWidth = window.innerWidth;
+      if (currentWindowWidth >= 1024) {
         setNumOfPagePosts(bgNumOfPagePosts);
-      } else {
+        if (isSmallDeviceRef.current) {
+          setPage(1);
+        }
+        isSmallDeviceRef.current = false;
+      } else if (currentWindowWidth < 1024) {
         setNumOfPagePosts(maxMdNumOfPagePosts);
+        isSmallDeviceRef.current = true;
       }
-      return () => {
-        window.removeEventListener("resize");
-      };
-    });
-  });
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const data = useStaticQuery(graphql`
     query {
