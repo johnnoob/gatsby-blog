@@ -6,14 +6,11 @@ import { useStaticQuery, graphql } from "gatsby";
 import { getImage } from "gatsby-plugin-image";
 
 const RecentPosts = () => {
-  const initialWindowWidth = window.innerWidth;
   const [page, setPage] = useState(1);
-  const [numOfPagePosts, setNumOfPagePosts] = useState(
-    initialWindowWidth >= 1024 ? 6 : 4
-  );
+  const [numOfPagePosts, setNumOfPagePosts] = useState(4);
   const bgNumOfPagePosts = 6;
   const maxMdNumOfPagePosts = 4;
-  const isSmallDeviceRef = useRef(initialWindowWidth >= 1024 ? false : true);
+  const isSmallDeviceRef = useRef(true);
 
   useEffect(() => {
     const handleResize = () => {
@@ -30,8 +27,10 @@ const RecentPosts = () => {
       }
     };
     window.addEventListener("resize", handleResize);
+    window.addEventListener("scroll", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", handleResize);
     };
   }, []);
 
