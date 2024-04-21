@@ -17,18 +17,24 @@ body {
 }
 
 .gatsby-highlight {
+    width: 100%;
     background-color: #fdf6e3;
-    @apply relative px-3 pt-2 pb-6 my-2 rounded-md overflow-hidden
+    @apply relative px-0 pt-3 my-2 rounded-lg
+}
+pre {
+    width: 100%;
+    overflow: hidden;
 }
 
 .gatsby-highlight-code-line {
     background-color: #feb;
     display: block;
-    margin-right: -1em;
-    margin-left: -1em;
-    padding-right: 1em;
-    padding-left: 0.75em;
+    padding-right: 0.5em;
+    padding-left: 0.5em;
     border-left: 0.25em solid #f99;
+}
+.token {
+    @apply text-sm
 }
 
 .gatsby-highlight[data-language]::before {
@@ -40,7 +46,7 @@ body {
     padding: 0;
     padding-left: 2.8em;
     overflow: initial;
-    @apply mt-8 ml-5
+    @apply mt-8
 }
 
 @layer components {
@@ -49,7 +55,7 @@ body {
             margin: 0 auto;
         }
     .post-max-container {
-            max-width: 1100px;
+            max-width: 1280px;
             margin: 0 auto;
         }
     .input {

@@ -11,7 +11,7 @@ const PostCard = ({ imageUrl }) => {
           alt="post card image"
           className={`aspect-[16/9]`}
         />
-        <h3 className="absolute text-white top-4  bg-black pl-2 pr-3 py-1 rounded-r-md max-sm:text-xs">
+        <h3 className="absolute text-white top-[5%] bg-black pl-2 pr-3 py-1 rounded-r-md max-sm:text-xs">
           {"Python"}
         </h3>
         <div className="w-full bg-white opacity-90 absolute bottom-0 px-6 py-5">

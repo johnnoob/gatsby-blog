@@ -10,7 +10,7 @@ const TopPostCardSmall = ({ imageUrl }) => {
         alt="post card image"
         className={`aspect-[16/11] w-[700px] max-lg:w-[130px] max-lg:flex-shrink-0`}
       />
-      <h3 className="absolute text-white top-4  bg-black pl-2 pr-3 py-1 rounded-r-md text-xs">
+      <h3 className="absolute text-white top-[10%] bg-black pl-2 pr-3 py-1 rounded-r-md text-xs">
         {"Python"}
       </h3>
       <div className="flex flex-col justify-center gap-2">
@@ -18,7 +18,7 @@ const TopPostCardSmall = ({ imageUrl }) => {
           <BsCalendar4Week />
           <p className="text-sm">March 29, 2024</p>
         </div>
-        <h4 className="text-sm font-semibold line-clamp-3">
+        <h4 className="font-semibold line-clamp-3">
           多模態詠唱外掛模型，輕量靈活有效，IP-Adapter by Hu & Jun et alter by
           Hu & Jun et alAdapter by Hu & Jun et alter
         </h4>

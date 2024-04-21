@@ -6,6 +6,7 @@ import Button from "./Button";
 import { BsEnvelope, BsList } from "react-icons/bs";
 
 const Navbar = ({ isBlogPost }) => {
+  // 自動收合Navbar功能
   // const [scrollDirection, setScrollDirection] = useState("");
   // const [lastScroll, setLastScroll] = useState(0);
   // useEffect(() => {

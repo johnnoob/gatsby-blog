@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Layout from "../../components/layout.js";
 import Seo from "../../components/Seo.js";
 import { graphql, Link } from "gatsby";
 import { MDXProvider } from "@mdx-js/react";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
-import { BsListTask, BsFillTagFill } from "react-icons/bs";
 import { MDXProviderComponents } from "../../components/MDXProviderComponents.js";
-import { FaAngleRight, FaAngleDown } from "react-icons/fa6";
+import { FaAngleRight, FaAngleDown, FaBookmark } from "react-icons/fa6";
 import { BsCalendar4Week } from "react-icons/bs";
+import useScrollIntersect from "../../customHooks.js/useScrollIntersect.js";
 
 const BlogPost = ({ data, children }) => {
   const {
@@ -24,85 +24,50 @@ const BlogPost = ({ data, children }) => {
   const { items: contents } = data.mdx.tableOfContents;
   const author = authors.find((author) => author.name === authorName);
   const authorImage = getImage(author.image);
+  const { isOpenMap, isIntersectingMap, handleH1Open } =
+    useScrollIntersect(contents);
 
-  // title h1的開合功能
-  const initialIsOpenMap = {};
-  contents.forEach((_, index) => {
-    initialIsOpenMap[index] = true;
-  });
-  const [isOpenMap, setIsOpenMap] = useState(initialIsOpenMap);
-  const handleH1Open = (index) => {
-    setIsOpenMap((isOpenMap) => ({ ...isOpenMap, [index]: !isOpenMap[index] }));
-  };
-  // title隨捲動頁面之intersect功能
-  const [isIntersectingMap, setIsIntersectingMap] = useState();
-  useEffect(() => {
-    const titles = document.querySelectorAll("h1, h2");
-    const initialIsIntersectingMap = {};
-    titles.forEach((title) => {
-      let titleId = title.id.toLowerCase();
-      initialIsIntersectingMap[`#${titleId}`] = false;
-    });
-    // setIsIntersectingMap(initialIsIntersectingMap);
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        // 將id轉為小寫以跟url匹配
-        const titleId = `#${entry.target.id.toLowerCase()}`;
-        if (entry.isIntersecting) {
-          setIsIntersectingMap((prevIsIntersectingMap) => {
-            const prevIsIntersectingMapCopy = { ...prevIsIntersectingMap };
-            // 將其他title的碰撞情形都設為false，只有最後碰撞到的title才為true
-            const isIntersectingMapKeys = Object.keys(
-              prevIsIntersectingMapCopy
-            );
-            isIntersectingMapKeys.forEach((key) => {
-              prevIsIntersectingMapCopy[key] = false;
-            });
-            return { ...prevIsIntersectingMapCopy, [titleId]: true };
-          });
-        }
-      },
-      {
-        root: null,
-        // rootMargin為目標元素(預設為視窗)的上右下左，可用px或%表示
-        rootMargin: "0px 0px -80% 0px",
-        threshold: 1,
+  const handleScrolltoTitle = (e, url) => {
+    e.preventDefault();
+    const scrollToElement = (url) => {
+      const element = document.querySelector(url);
+      console.log(element);
+      if (element) {
+        window.scrollTo({
+          top: element.offsetTop - 60,
+          behavior: "smooth",
+        });
       }
-    );
-    titles.forEach((title) => {
-      observer.observe(title);
-    });
-
-    return () => {
-      observer.disconnect();
     };
-  }, []);
+    scrollToElement(url);
+  };
 
   return (
     <Layout isBlogPost={true}>
       <section className="pt-[80px] post-max-container padding-x">
-        <div className="w-full">
-          <h1 className="text-4xl text-center font-bold leading-relaxed">
+        <div className="mx-auto max-w-[700px]">
+          <h1 className="text-4xl text-center font-bold leading-normal">
             {pageTitle}
           </h1>
-          <div className="flex justify-center items-center py-7 gap-8">
-            <div className="flex items-center gap-2">
-              <GatsbyImage
-                image={authorImage}
-                className="w-[35px] h-[35px] rounded-full"
-              />
-              <p>{author.name}</p>
-            </div>
-            <div className="flex items-center gap-1 text-gray-600">
-              <BsCalendar4Week size={20} />
-              <p>{date}</p>
+          <div className="flex justify-center items-center py-7 gap-8 max-lg:flex-col max-lg:justify-start max-lg:items-center max-lg:gap-2">
+            <div className="flex justify-center gap-5">
+              <div className="flex items-center gap-2">
+                <GatsbyImage
+                  image={authorImage}
+                  className="w-[35px] h-[35px] rounded-full"
+                />
+                <p>{author.name}</p>
+              </div>
+              <div className="flex items-center gap-1 text-gray-600">
+                <BsCalendar4Week size={20} />
+                <p>{date}</p>
+              </div>
             </div>
             <div className="flex gap-2">
               {tags.map((tag) => (
                 <Link
                   to={`/${tag}`}
-                  className="px-3 py-1 bg-slate-200 rounded-md"
+                  className="px-3 py-1 font-light text-sm bg-slate-200 capitalize rounded-3xl border-[1px] hover:border-black"
                 >
                   {tag}
                 </Link>
@@ -111,17 +76,16 @@ const BlogPost = ({ data, children }) => {
           </div>
         </div>
         <div>
-          <div className="flex justify-start items-start gap-10 max-lg:flex-col max-lg:padding-l">
-            <aside className="flex flex-col items-start gap-3 text-base sticky max-lg:relative top-[100px] basis-[250px] max-lg:w-full max-lg:top-0">
-              <div className={`w-full`}>
-                <div className="relative flex justify-center mb-4">
-                  <div className="flex justify-center items-center px-[20px] gap-1 bg-white">
-                    <BsListTask size={20} />
-                    <h4 className="tracking-wider">目錄</h4>
+          <div className="flex justify-start items-start gap-14 max-lg:flex-col max-lg:gap-1">
+            <aside className="sticky flex-shrink-0 top-[100px] basis-[250px] max-lg:w-full max-lg:relative max-lg:top-0 max-lg:basis-auto">
+              <div>
+                <div className="flex mb-4">
+                  <div className="flex justify-start items-center gap-2 bg-white">
+                    <FaBookmark size={18} />
+                    <h4 className="font-bold text-lg">內容目錄</h4>
                   </div>
-                  <div className="absolute top-1/2 h-[2px] w-full bg-black -translate-y-1/2 -z-10"></div>
                 </div>
-                <ul className="flex flex-col text-gray-500">
+                <ul className="flex flex-col">
                   {contents.map((content, index) => {
                     const {
                       title: h1,
@@ -129,7 +93,7 @@ const BlogPost = ({ data, children }) => {
                       items: h2s = null,
                     } = content;
                     return (
-                      <li key={h1} className="border-gray-300 py-1">
+                      <li key={h1} className="py-1">
                         <div className="flex justify-start items-center gap-2 pb-1">
                           {h2s ? (
                             <button onClick={() => handleH1Open(index)}>
@@ -140,15 +104,16 @@ const BlogPost = ({ data, children }) => {
                               )}
                             </button>
                           ) : (
-                            <div className="w-[15px]"></div>
+                            <div className="w-[15px] h-[15px] flex-shrink-0"></div>
                           )}
                           <a
                             href={h1Url}
-                            className={
+                            className={`${
                               isIntersectingMap && isIntersectingMap[h1Url]
                                 ? "text-blue-300"
                                 : "text-black"
-                            }
+                            }`}
+                            onClick={(e) => handleScrolltoTitle(e, h1Url)}
                           >
                             {h1}
                           </a>
@@ -164,11 +129,18 @@ const BlogPost = ({ data, children }) => {
                                   } ${
                                     isIntersectingMap &&
                                     isIntersectingMap[h2Url]
-                                      ? "text-blue-300"
-                                      : "text-black"
-                                  } ml-[7px] pl-[16px] py-[2px] border-l-[1px] border-slate-300`}
+                                      ? "text-blue-300 border-blue-300"
+                                      : "text-gray-p border-slate-300"
+                                  } ml-[7px] pl-[16px] py-[2px] border-l-[1px] `}
                                 >
-                                  <a href={h2Url}>{h2}</a>
+                                  <a
+                                    href={h2Url}
+                                    onClick={(e) =>
+                                      handleScrolltoTitle(e, h2Url)
+                                    }
+                                  >
+                                    {h2}
+                                  </a>
                                 </li>
                               );
                             })}
@@ -179,27 +151,8 @@ const BlogPost = ({ data, children }) => {
                   })}
                 </ul>
               </div>
-              <div className="w-full">
-                <div className="relative flex justify-center mb-4">
-                  <div className="flex justify-center items-center bg-white px-[20px] gap-1">
-                    <BsFillTagFill size={20} />
-                    <h4 className=" tracking-wider">文章標籤</h4>
-                  </div>
-                  <div className="absolute top-1/2 h-[2px] w-full bg-black -translate-y-1/2 -z-10"></div>
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {tags.map((tag) => (
-                    <Link
-                      to={`/${tag}`}
-                      className="px-3 py-1 bg-slate-200 rounded-md"
-                    >
-                      {tag}
-                    </Link>
-                  ))}
-                </div>
-              </div>
             </aside>
-            <article className="flex-1">
+            <article className="w-full">
               <MDXProvider components={MDXProviderComponents}>
                 {children}
               </MDXProvider>

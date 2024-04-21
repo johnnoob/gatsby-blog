@@ -13,7 +13,7 @@ const PostCard = ({ imageUrl }) => {
           alt={""}
           className="aspect-[16/9] rounded-xl max-sm:aspect-square max-sm:max-h-[250px]"
         />
-        <h3 className="absolute text-white top-4  bg-black pl-2 pr-3 py-1 rounded-r-md max-sm:text-xs">
+        <h3 className="absolute text-white top-[10%] bg-black pl-2 pr-3 py-1 rounded-r-md max-sm:text-xs">
           {"Python"}
         </h3>
       </div>
