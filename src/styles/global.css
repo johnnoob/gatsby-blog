@@ -21,14 +21,9 @@ body {
     background-color: #fdf6e3;
     @apply relative px-0 pt-3 my-2 rounded-lg
 }
-pre {
-    width: 100%;
-    overflow: hidden;
-}
 
 .gatsby-highlight-code-line {
     background-color: #feb;
-    display: block;
     padding-right: 0.5em;
     padding-left: 0.5em;
     border-left: 0.25em solid #f99;
@@ -72,6 +67,9 @@ pre {
     }
     .section-title {
         @apply text-3xl font-bold tracking-wider
+    }
+    .scroll-down {
+        @apply translate-y-[300px]
     }
 }
 

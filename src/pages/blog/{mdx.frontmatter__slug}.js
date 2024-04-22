@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../../components/layout.js";
 import Seo from "../../components/Seo.js";
 import { graphql, Link } from "gatsby";
 import { MDXProvider } from "@mdx-js/react";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import { MDXProviderComponents } from "../../components/MDXProviderComponents.js";
-import { FaAngleRight, FaAngleDown, FaBookmark } from "react-icons/fa6";
+import {
+  FaAngleRight,
+  FaAngleDown,
+  FaBookmark,
+  FaXmark,
+} from "react-icons/fa6";
 import { BsCalendar4Week } from "react-icons/bs";
 import useScrollIntersect from "../../customHooks.js/useScrollIntersect.js";
 
@@ -40,6 +45,33 @@ const BlogPost = ({ data, children }) => {
       }
     };
     scrollToElement(url);
+  };
+
+  // 收合bookmark功能
+  const [scrollDirection, setScrollDirection] = useState(null);
+  const [lastScroll, setLastScroll] = useState(0);
+  const [isOpenSideBar, setIsOpenSidebar] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScroll = window.scrollY;
+      if (currentScroll <= 0) {
+        setScrollDirection(null);
+        return;
+      }
+      const newDirection =
+        currentScroll > lastScroll ? "scroll-down" : "scroll-up";
+      if (newDirection !== scrollDirection) {
+        setScrollDirection(newDirection);
+      }
+      setLastScroll(currentScroll);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScroll]);
+
+  const handleOpenSideBar = () => {
+    setIsOpenSidebar(!isOpenSideBar);
   };
 
   return (
@@ -77,7 +109,8 @@ const BlogPost = ({ data, children }) => {
         </div>
         <div>
           <div className="flex justify-start items-start gap-14 max-lg:flex-col max-lg:gap-1">
-            <aside className="sticky flex-shrink-0 top-[100px] basis-[250px] max-lg:w-full max-lg:relative max-lg:top-0 max-lg:basis-auto">
+            {/* 大螢幕版sidebar */}
+            <aside className="sticky flex-shrink-0 top-[100px] basis-[250px] max-lg:w-full max-lg:relative max-lg:top-0 max-lg:basis-auto max-lg:hidden">
               <div>
                 <div className="flex mb-4">
                   <div className="flex justify-start items-center gap-2 bg-white">
@@ -158,7 +191,94 @@ const BlogPost = ({ data, children }) => {
               </MDXProvider>
             </article>
           </div>
+          <button
+            className={`fixed transition-all w-10 h-10 top-[90%] left-[50%] rounded-full -translate-x-1/2 bg-black lg:hidden ${scrollDirection}`}
+            onClick={handleOpenSideBar}
+          >
+            <FaBookmark size={18} className="mx-auto text-white" />
+          </button>
         </div>
+        {/* 小螢幕版sidebar */}
+        <aside
+          className={`fixed top-0 left-0 w-screen h-screen bg-white z-10 transition-all ${
+            isOpenSideBar || "translate-y-full"
+          }`}
+        >
+          <button
+            className="absolute top-[5%] right-[10%]"
+            onClick={handleOpenSideBar}
+          >
+            <FaXmark size={40} />
+          </button>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2/3">
+            <div className="flex justify-start items-center gap-2 bg-white">
+              <FaBookmark size={25} />
+              <h4 className="font-bold text-2xl">內容目錄</h4>
+            </div>
+            <ul className="flex flex-col text-lg">
+              {contents.map((content, index) => {
+                const { title: h1, url: h1Url, items: h2s = null } = content;
+                return (
+                  <li key={h1} className="py-1">
+                    <div className="flex justify-start items-center gap-2 pb-1">
+                      {h2s ? (
+                        <button onClick={() => handleH1Open(index)}>
+                          {isOpenMap[index] ? (
+                            <FaAngleDown size={15} />
+                          ) : (
+                            <FaAngleRight size={15} />
+                          )}
+                        </button>
+                      ) : (
+                        <div className="w-[15px] h-[15px] flex-shrink-0"></div>
+                      )}
+                      <a
+                        href={h1Url}
+                        className={`${
+                          isIntersectingMap && isIntersectingMap[h1Url]
+                            ? "text-blue-300"
+                            : "text-black"
+                        }`}
+                        onClick={(e) => {
+                          handleScrolltoTitle(e, h1Url);
+                          handleOpenSideBar();
+                        }}
+                      >
+                        {h1}
+                      </a>
+                    </div>
+                    {h2s && (
+                      <ul className="">
+                        {h2s.map(({ title: h2, url: h2Url }) => {
+                          return (
+                            <li
+                              key={h2}
+                              className={`${isOpenMap[index] ? "" : "hidden"} ${
+                                isIntersectingMap && isIntersectingMap[h2Url]
+                                  ? "text-blue-300 border-blue-300"
+                                  : "text-gray-p border-slate-300"
+                              } ml-[7px] pl-[16px] py-[2px] border-l-[1px] `}
+                            >
+                              <a
+                                href={h2Url}
+                                onClick={(e) => {
+                                  handleScrolltoTitle(e, h2Url);
+                                  handleOpenSideBar();
+                                }}
+                              >
+                                {h2}
+                              </a>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </aside>
       </section>
     </Layout>
   );
