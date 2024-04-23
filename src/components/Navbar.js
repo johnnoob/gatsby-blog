@@ -7,30 +7,17 @@ import { BsEnvelope, BsList } from "react-icons/bs";
 import { FaXmark } from "react-icons/fa6";
 
 const Navbar = ({ isBlogPost }) => {
-  // 自動收合Navbar功能
-  // const [scrollDirection, setScrollDirection] = useState("");
-  // const [lastScroll, setLastScroll] = useState(0);
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     const currentScroll = window.scrollY;
-  //     if (currentScroll <= 0) {
-  //       setScrollDirection(null);
-  //       return;
-  //     }
-  //     const newDirection =
-  //       currentScroll > lastScroll ? "scroll-down" : "scroll-up";
-  //     if (newDirection !== scrollDirection) {
-  //       setScrollDirection(newDirection);
-  //     }
-  //     setLastScroll(currentScroll);
-  //   };
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, [scrollDirection, lastScroll]);
   const navbarRef = useRef(null); // 偵測頁面瀏覽進度
+  const navProgressRef = useRef(null);
   const [progressWidth, setProgressWidth] = useState(0);
   const [isShowProgress, setIsShowProgress] = useState(false);
   const [h1Infos, setH1Infos] = useState([]);
+  const [isOpenSideBar, setIsOpenSidebar] = useState(false);
+  const [progress, setProgress] = useState({
+    x: 0,
+    widthRatio: 0,
+    wisdth: 0,
+  });
 
   useEffect(() => {
     if (!isBlogPost) return;
@@ -58,23 +45,42 @@ const Navbar = ({ isBlogPost }) => {
   });
   useEffect(() => {
     if (!isBlogPost) return;
-    // const article = document.querySelector("article");
-    const h1Nodes = document.querySelectorAll("article h1");
-    const pageHeight = document.documentElement.scrollHeight;
-    const windowHeight = window.innerHeight;
-    const h1Titles = Array.apply(null, h1Nodes);
-    const h1Infos = h1Titles.map((h1) => {
-      const h1Top = h1.offsetTop;
-      const h1TopRatio =
-        Math.round(((h1Top + windowHeight - 80) / pageHeight) * 10000) / 10000;
-      const h1Text = h1.innerText;
-      const h1Id = h1.id;
-      return { text: h1Text, id: h1Id, topRatio: h1TopRatio };
-    });
-    setH1Infos(h1Infos);
+    const getH1Infos = () => {
+      const h1Nodes = document.querySelectorAll("article h1");
+      const pageHeight = document.documentElement.scrollHeight;
+      const windowHeight = window.innerHeight;
+      const h1Titles = Array.apply(null, h1Nodes);
+      const h1Infos = h1Titles.map((h1) => {
+        const h1TopRatio =
+          Math.round(
+            ((h1.offsetTop + windowHeight - h1.offsetHeight) / pageHeight) *
+              10000
+          ) / 10000;
+        return { text: h1.innerText, id: h1.id, topRatio: h1TopRatio };
+      });
+      setH1Infos(h1Infos);
+    };
+    getH1Infos();
+    window.addEventListener("resize", () => getH1Infos());
+    return window.removeEventListener("resize", () => getH1Infos());
   }, []);
 
-  const [isOpenSideBar, setIsOpenSidebar] = useState(false);
+  useEffect(() => {
+    const setProgressPosition = (e) => {
+      if (!e.target) return;
+      const widthRatio =
+        Math.round((e.clientX / navProgressRef.current.offsetWidth) * 10000) /
+        10000;
+      setProgress({ x: e.clientX, widthRatio: widthRatio });
+    };
+    navProgressRef.current.addEventListener("pointerdown", (e) => {
+      setProgressPosition(e);
+    });
+    return navProgressRef.current.removeEventListener("pointerdown", (e) => {
+      setProgressPosition(e);
+    });
+  }, []);
+
   const handleOpenSideBar = () => {
     setIsOpenSidebar(!isOpenSideBar);
   };
@@ -152,31 +158,36 @@ const Navbar = ({ isBlogPost }) => {
           </nav>
         </header>
         <div
+          ref={navProgressRef}
           className={`relative transition-all ${
             isShowProgress ? "bg-blue-200" : "bg-transparent"
           }`}
         >
-          <div
+          {/* <div
             className={`${
               isShowProgress ? "bg-blue-500" : "bg-transparent"
             } z-10`}
             style={{ width: progressWidth, height: 4 }}
+          ></div> */}
+          <div
+            className={`bg-blue-500 z-10`}
+            style={{ width: `${progress.widthRatio * 100}%`, height: 4 }}
           ></div>
-          <ul>
+          {/* <ul>
             {h1Infos.map(({ text, id, topRatio }) => {
               return (
                 <li
                   className="absolute group"
                   style={{ top: 0, left: `${topRatio * 100}%` }}
                 >
-                  <div className="bg-blue-200 w-4 h-4 rounded-full mb-2 "></div>
+                  <div className="bg-blue-200 w-1 h-4  mb-2 "></div>
                   <p className="rounded-lg bg-gray-100 -translate-x-1/2 px-2 py-1 hidden group-hover:block">
                     {text}
                   </p>
                 </li>
               );
             })}
-          </ul>
+          </ul> */}
         </div>
       </section>
     </>
