@@ -30,6 +30,7 @@ const Navbar = ({ isBlogPost }) => {
   const navbarRef = useRef(null); // 偵測頁面瀏覽進度
   const [progressWidth, setProgressWidth] = useState(0);
   const [isShowProgress, setIsShowProgress] = useState(false);
+  const [h1Infos, setH1Infos] = useState([]);
 
   useEffect(() => {
     if (!isBlogPost) return;
@@ -55,6 +56,23 @@ const Navbar = ({ isBlogPost }) => {
       []
     );
   });
+  useEffect(() => {
+    if (!isBlogPost) return;
+    // const article = document.querySelector("article");
+    const h1Nodes = document.querySelectorAll("article h1");
+    const pageHeight = document.documentElement.scrollHeight;
+    const windowHeight = window.innerHeight;
+    const h1Titles = Array.apply(null, h1Nodes);
+    const h1Infos = h1Titles.map((h1) => {
+      const h1Top = h1.offsetTop;
+      const h1TopRatio =
+        Math.round(((h1Top + windowHeight - 80) / pageHeight) * 10000) / 10000;
+      const h1Text = h1.innerText;
+      const h1Id = h1.id;
+      return { text: h1Text, id: h1Id, topRatio: h1TopRatio };
+    });
+    setH1Infos(h1Infos);
+  }, []);
 
   const [isOpenSideBar, setIsOpenSidebar] = useState(false);
   const handleOpenSideBar = () => {
@@ -134,7 +152,7 @@ const Navbar = ({ isBlogPost }) => {
           </nav>
         </header>
         <div
-          className={`transition-all ${
+          className={`relative transition-all ${
             isShowProgress ? "bg-blue-200" : "bg-transparent"
           }`}
         >
@@ -144,6 +162,21 @@ const Navbar = ({ isBlogPost }) => {
             } z-10`}
             style={{ width: progressWidth, height: 4 }}
           ></div>
+          <ul>
+            {h1Infos.map(({ text, id, topRatio }) => {
+              return (
+                <li
+                  className="absolute group"
+                  style={{ top: 0, left: `${topRatio * 100}%` }}
+                >
+                  <div className="bg-blue-200 w-4 h-4 rounded-full mb-2 "></div>
+                  <p className="rounded-lg bg-gray-100 -translate-x-1/2 px-2 py-1 hidden group-hover:block">
+                    {text}
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </section>
     </>

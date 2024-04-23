@@ -27,6 +27,7 @@ body {
     padding-right: 0.5em;
     padding-left: 0.5em;
     border-left: 0.25em solid #f99;
+    display: block;
 }
 .token {
     @apply text-sm
@@ -41,6 +42,7 @@ body {
     padding: 0;
     padding-left: 2.8em;
     overflow: initial;
+    display: block;
     @apply mt-8
 }
 
