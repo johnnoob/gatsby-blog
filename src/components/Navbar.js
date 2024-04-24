@@ -74,10 +74,32 @@ const Navbar = ({ isBlogPost }) => {
       setProgress({ x: e.clientX, widthRatio: widthRatio });
     };
     navProgressRef.current.addEventListener("pointerdown", (e) => {
+      navProgressRef.current.setPointerCapture(e.pointerId);
       setProgressPosition(e);
-    });
-    return navProgressRef.current.removeEventListener("pointerdown", (e) => {
-      setProgressPosition(e);
+      navProgressRef.current.addEventListener(
+        "pointermove",
+        setProgressPosition
+      );
+      navProgressRef.current.addEventListener(
+        "pointerup",
+        (e) => {
+          const pageHeight = document.documentElement.scrollHeight;
+          const widthRatio =
+            Math.round(
+              (e.clientX / navProgressRef.current.offsetWidth) * 10000
+            ) / 10000;
+          window.scrollTo({
+            top: widthRatio * pageHeight,
+            left: 0,
+            behavior: "smooth",
+          });
+          navProgressRef.current.removeEventListener(
+            "pointermove",
+            setProgressPosition
+          );
+        },
+        { once: true }
+      );
     });
   }, []);
 
@@ -162,18 +184,19 @@ const Navbar = ({ isBlogPost }) => {
           className={`relative transition-all ${
             isShowProgress ? "bg-blue-200" : "bg-transparent"
           }`}
+          style={{ height: 4 }}
         >
-          {/* <div
+          <div
             className={`${
               isShowProgress ? "bg-blue-500" : "bg-transparent"
             } z-10`}
             style={{ width: progressWidth, height: 4 }}
-          ></div> */}
-          <div
-            className={`bg-blue-500 z-10`}
-            style={{ width: `${progress.widthRatio * 100}%`, height: 4 }}
           ></div>
-          {/* <ul>
+          <div
+            className="absolute top-0 w-5 h-5 bg-blue-500 rounded-full"
+            style={{ left: progress.x }}
+          ></div>
+          <ul>
             {h1Infos.map(({ text, id, topRatio }) => {
               return (
                 <li
@@ -187,7 +210,7 @@ const Navbar = ({ isBlogPost }) => {
                 </li>
               );
             })}
-          </ul> */}
+          </ul>
         </div>
       </section>
     </>
