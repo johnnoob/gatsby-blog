@@ -182,7 +182,7 @@ const Navbar = ({ isBlogPost }) => {
         </header>
         <div
           ref={navProgressRef}
-          className={`relative transition-all ${
+          className={`relative transition-all touch-none ${
             isShowProgress ? "bg-blue-200" : "bg-transparent"
           }`}
           style={{ height: 4 }}
