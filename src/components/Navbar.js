@@ -84,12 +84,13 @@ const Navbar = ({ isBlogPost }) => {
         "pointerup",
         (e) => {
           const pageHeight = document.documentElement.scrollHeight;
+          const windowHeight = window.innerHeight;
           const widthRatio =
             Math.round(
               (e.clientX / navProgressRef.current.offsetWidth) * 10000
             ) / 10000;
           window.scrollTo({
-            top: widthRatio * pageHeight,
+            top: widthRatio * pageHeight - windowHeight,
             left: 0,
             behavior: "smooth",
           });
