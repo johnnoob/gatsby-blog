@@ -8,10 +8,13 @@ import { FaXmark } from "react-icons/fa6";
 
 const Navbar = ({ isBlogPost }) => {
   const navbarRef = useRef(null); // 偵測頁面瀏覽進度
-  const navProgressRef = useRef(null);
+  const navProgressRef = useRef(null); // 進度條監控
+  const navBreakpointsRef = useRef([]);
+  const navPointerRef = useRef(null);
   const [progressWidth, setProgressWidth] = useState(0);
   const [isShowProgress, setIsShowProgress] = useState(false);
   const [h1Infos, setH1Infos] = useState([]);
+  const [h1ProgressInfos, setH1ProgressInfos] = useState([]);
   const [isOpenSideBar, setIsOpenSidebar] = useState(false);
   const [progress, setProgress] = useState({
     x: 0,
@@ -36,7 +39,7 @@ const Navbar = ({ isBlogPost }) => {
           setIsShowProgress(false);
         }
         const scrollRatio =
-          Math.round(((scrollY + windowHeight) / pageHeight) * 100) / 100;
+          Math.round(((scrollY + windowHeight) / pageHeight) * 10000) / 10000;
         const scrollProgressWidth = navbarWidth * scrollRatio;
         setProgressWidth(scrollProgressWidth);
       },
@@ -56,7 +59,12 @@ const Navbar = ({ isBlogPost }) => {
             ((h1.offsetTop + windowHeight - h1.offsetHeight) / pageHeight) *
               10000
           ) / 10000;
-        return { text: h1.innerText, id: h1.id, topRatio: h1TopRatio };
+        return {
+          text: h1.innerText,
+          id: h1.id,
+          topRatio: h1TopRatio,
+          isBreakpointColliding: false,
+        };
       });
       setH1Infos(h1Infos);
     };
@@ -66,6 +74,43 @@ const Navbar = ({ isBlogPost }) => {
   }, []);
 
   useEffect(() => {
+    const isColliding = (elem1, elem2) => {
+      const rect1 = elem1.getBoundingClientRect();
+      const rect2 = elem2.getBoundingClientRect();
+      return !(
+        rect1.right < rect2.left ||
+        rect1.left > rect2.right ||
+        rect1.bottom < rect2.top ||
+        rect1.top > rect2.bottom
+      );
+    };
+
+    const detectColliding = (pointerRef, breakpointsRef) => {
+      const h1InfosCopy = h1Infos.slice();
+      console.log(h1Infos);
+
+      breakpointsRef.current.forEach((breakpoint) => {
+        const breakpointId = breakpoint.id;
+        const targetH1Index = h1InfosCopy.findIndex((elem) => {
+          return elem.id === breakpointId;
+        });
+        if (isColliding(pointerRef.current, breakpoint)) {
+          // console.log("碰撞", breakpoint);
+          h1InfosCopy[targetH1Index] = {
+            ...h1InfosCopy[targetH1Index],
+            isBreakpointColliding: true,
+          };
+        } else {
+          // console.log("沒碰撞", breakpoint);
+          h1InfosCopy[targetH1Index] = {
+            ...h1InfosCopy[targetH1Index],
+            isBreakpointColliding: false,
+          };
+        }
+      });
+      setH1ProgressInfos(h1InfosCopy);
+    };
+
     const setProgressPosition = (e) => {
       if (!e.target) return;
       const widthRatio =
@@ -73,12 +118,20 @@ const Navbar = ({ isBlogPost }) => {
         10000;
       setProgress({ x: e.clientX, widthRatio: widthRatio });
     };
+
+    const pointerMoveHandler = (e) => {
+      setProgressPosition(e);
+      detectColliding(navPointerRef, navBreakpointsRef);
+    };
+
     navProgressRef.current.addEventListener("pointerdown", (e) => {
       navProgressRef.current.setPointerCapture(e.pointerId);
-      setProgressPosition(e);
+      // setProgressPosition(e);
+      // detectColliding(navPointerRef, navBreakpointsRef);
+      pointerMoveHandler(e);
       navProgressRef.current.addEventListener(
         "pointermove",
-        setProgressPosition
+        pointerMoveHandler
       );
       navProgressRef.current.addEventListener(
         "pointerup",
@@ -96,13 +149,13 @@ const Navbar = ({ isBlogPost }) => {
           });
           navProgressRef.current.removeEventListener(
             "pointermove",
-            setProgressPosition
+            pointerMoveHandler
           );
         },
         { once: true }
       );
     });
-  }, []);
+  }, [navPointerRef, navBreakpointsRef, navProgressRef, h1Infos]);
 
   const handleOpenSideBar = () => {
     setIsOpenSidebar(!isOpenSideBar);
@@ -194,23 +247,41 @@ const Navbar = ({ isBlogPost }) => {
             style={{ width: progressWidth, height: 4 }}
           ></div>
           <div
+            ref={navPointerRef}
             className="absolute top-0 w-5 h-5 bg-blue-500 rounded-full"
             style={{ left: progress.x }}
           ></div>
           <ul>
-            {h1Infos.map(({ text, id, topRatio }) => {
-              return (
-                <li
-                  className="absolute group"
-                  style={{ top: 0, left: `${topRatio * 100}%` }}
-                >
-                  <div className="bg-blue-200 w-1 h-4  mb-2 "></div>
-                  <p className="rounded-lg bg-gray-100 -translate-x-1/2 px-2 py-1 hidden group-hover:block">
-                    {text}
-                  </p>
-                </li>
-              );
-            })}
+            {h1ProgressInfos.map(
+              ({ text, id, topRatio, isBreakpointColliding }) => {
+                return (
+                  <li
+                    ref={(node) => {
+                      if (node) {
+                        if (navBreakpointsRef.current.includes(node)) {
+                          return;
+                        } else {
+                          navBreakpointsRef.current.push(node);
+                        }
+                      }
+                    }}
+                    id={id}
+                    key={id}
+                    className="absolute group"
+                    style={{ top: 0, left: `${topRatio * 100}%` }}
+                  >
+                    <div className="bg-blue-200 w-1 h-4  mb-2 "></div>
+                    <p
+                      className={`rounded-lg bg-gray-100 -translate-x-1/2 px-2 py-1 ${
+                        isBreakpointColliding ? "block" : "hidden"
+                      }`}
+                    >
+                      {text}
+                    </p>
+                  </li>
+                );
+              }
+            )}
           </ul>
         </div>
       </section>
