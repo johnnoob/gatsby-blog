@@ -243,19 +243,19 @@ const Navbar = ({ isBlogPost }) => {
         </header>
         <div
           ref={navProgressRef}
-          className={`relative transition-all touch-none group h-1 hover:h-4 ${
+          className={`relative touch-none group h-1 hover:h-4 ${
             isShowProgress ? "bg-blue-200" : "bg-transparent"
           }`}
         >
           <div
-            className={`transition-all h-1 group-hover:h-4 ${
+            className={`h-1 group-hover:h-4 ${
               isShowProgress ? "bg-blue-500" : "bg-transparent"
             } z-10`}
             style={{ width: progressWidth }}
           ></div>
           <div
             ref={navPointerRef}
-            className="absolute top-0 -translate-x-1/2 -translate-y-full z-20"
+            className="absolute top-0 -translate-x-1/2 -translate-y-full z-20 hidden group-hover:block touch-none"
             style={{ left: pointerPosition.x }}
           >
             <FaMapMarker size={30} />
@@ -279,7 +279,7 @@ const Navbar = ({ isBlogPost }) => {
                     className="absolute hidden group-hover:block"
                     style={{ top: 0, left: `${topRatio * 100}%` }}
                   >
-                    <div className="bg-blue-200 w-1 h-4 mb-2"></div>
+                    <div className="bg-black w-1 h-4 mb-2"></div>
                     <p
                       className={`rounded-lg bg-gray-100 -translate-x-1/2 px-2 py-1 ${
                         isBreakpointColliding ? "block" : "hidden"
