@@ -20,31 +20,26 @@ const BlogPost = ({ data, children }) => {
     date,
     slug,
     tags,
-    hero_image,
     author: authorName,
   } = data.mdx.frontmatter;
   const authors = data.allContentfulAuthor.nodes;
-
-  const heroImage = getImage(hero_image.childrenImageSharp[0]);
   const { items: contents } = data.mdx.tableOfContents;
   const author = authors.find((author) => author.name === authorName);
   const authorImage = getImage(author.image);
   const { isOpenMap, isIntersectingMap, handleH1Open } =
     useScrollIntersect(contents);
 
-  const handleScrolltoTitle = (e, url) => {
-    e.preventDefault();
-    const scrollToElement = (url) => {
-      const element = document.querySelector(url);
-      console.log(element);
-      if (element) {
+  const handleScrolltoTitle = (url) => {
+    const scrollToTitle = (url) => {
+      const title = document.querySelector(`article ${url}`);
+      if (title) {
         window.scrollTo({
-          top: element.offsetTop - 60,
+          top: title.offsetTop - title.offsetHeight - 10,
           behavior: "smooth",
         });
       }
     };
-    scrollToElement(url);
+    scrollToTitle(url);
   };
 
   // 收合bookmark功能
@@ -68,7 +63,7 @@ const BlogPost = ({ data, children }) => {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScroll]);
+  }, [lastScroll, scrollDirection]);
 
   const handleOpenSideBar = () => {
     setIsOpenSidebar(!isOpenSideBar);
@@ -139,17 +134,16 @@ const BlogPost = ({ data, children }) => {
                           ) : (
                             <div className="w-[15px] h-[15px] flex-shrink-0"></div>
                           )}
-                          <a
-                            href={h1Url}
+                          <button
                             className={`${
                               isIntersectingMap && isIntersectingMap[h1Url]
                                 ? "text-blue-300"
                                 : "text-black"
                             }`}
-                            onClick={(e) => handleScrolltoTitle(e, h1Url)}
+                            onClick={() => handleScrolltoTitle(h1Url)}
                           >
                             {h1}
-                          </a>
+                          </button>
                         </div>
                         {h2s && (
                           <ul className="">
@@ -166,14 +160,12 @@ const BlogPost = ({ data, children }) => {
                                       : "text-gray-p border-slate-300"
                                   } ml-[7px] pl-[16px] py-[2px] border-l-[1px] `}
                                 >
-                                  <a
+                                  <button
                                     href={h2Url}
-                                    onClick={(e) =>
-                                      handleScrolltoTitle(e, h2Url)
-                                    }
+                                    onClick={() => handleScrolltoTitle(h2Url)}
                                   >
                                     {h2}
-                                  </a>
+                                  </button>
                                 </li>
                               );
                             })}
@@ -232,20 +224,19 @@ const BlogPost = ({ data, children }) => {
                       ) : (
                         <div className="w-[15px] h-[15px] flex-shrink-0"></div>
                       )}
-                      <a
-                        href={h1Url}
+                      <button
                         className={`${
                           isIntersectingMap && isIntersectingMap[h1Url]
                             ? "text-blue-300"
                             : "text-black"
                         }`}
-                        onClick={(e) => {
-                          handleScrolltoTitle(e, h1Url);
+                        onClick={() => {
+                          handleScrolltoTitle(h1Url);
                           handleOpenSideBar();
                         }}
                       >
                         {h1}
-                      </a>
+                      </button>
                     </div>
                     {h2s && (
                       <ul className="">
@@ -259,15 +250,14 @@ const BlogPost = ({ data, children }) => {
                                   : "text-gray-p border-slate-300"
                               } ml-[7px] pl-[16px] py-[2px] border-l-[1px] `}
                             >
-                              <a
-                                href={h2Url}
-                                onClick={(e) => {
-                                  handleScrolltoTitle(e, h2Url);
+                              <button
+                                onClick={() => {
+                                  handleScrolltoTitle(h2Url);
                                   handleOpenSideBar();
                                 }}
                               >
                                 {h2}
-                              </a>
+                              </button>
                             </li>
                           );
                         })}

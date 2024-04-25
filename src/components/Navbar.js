@@ -14,7 +14,6 @@ const Navbar = ({ isBlogPost }) => {
   const navPointerRef = useRef(null);
   const [progressWidth, setProgressWidth] = useState(0);
   const [isShowProgress, setIsShowProgress] = useState(false);
-  const [h1Infos, setH1Infos] = useState([]);
   const [h1BreakpointInfos, setH1BreakpointInfos] = useState([]);
   const [isOpenSideBar, setIsOpenSidebar] = useState(false);
   const [pointerPosition, setPointerPosition] = useState({
@@ -37,42 +36,42 @@ const Navbar = ({ isBlogPost }) => {
       } else {
         setIsShowProgress(false);
       }
-      const scrollRatio =
+      const scrollProgressRatio =
         Math.round(((scrollY + windowHeight) / pageHeight) * 10000) / 10000;
-      const scrollProgressWidth = navbarWidth * scrollRatio;
+      const scrollProgressWidth = navbarWidth * scrollProgressRatio;
       setProgressWidth(scrollProgressWidth);
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isBlogPost]);
 
   useEffect(() => {
     if (!isBlogPost) return;
     const getH1Infos = () => {
       const pageHeight = document.documentElement.scrollHeight;
       const windowHeight = window.innerHeight;
-      const h1Titles = [...document.querySelectorAll("article h1")];
-      const h1Infos = h1Titles.map((h1) => {
-        const h1TopRatio =
+      const h1Nodes = [...document.querySelectorAll("article h1")];
+      const h1Infos = h1Nodes.map((h1Node) => {
+        const h1TopToPageRatio =
           Math.round(
-            ((h1.offsetTop + windowHeight - h1.offsetHeight) / pageHeight) *
+            ((h1Node.offsetTop + windowHeight - h1Node.offsetHeight) /
+              pageHeight) *
               10000
           ) / 10000;
         return {
-          text: h1.innerText,
-          id: h1.id,
-          topRatio: h1TopRatio,
+          text: h1Node.innerText,
+          id: h1Node.id,
+          topRatio: h1TopToPageRatio,
           isBreakpointColliding: false,
         };
       });
-      setH1Infos(h1Infos);
       setH1BreakpointInfos(h1Infos);
     };
     getH1Infos();
     window.addEventListener("resize", getH1Infos);
     return () => window.removeEventListener("resize", getH1Infos);
-  }, []);
+  }, [isBlogPost]);
 
   useEffect(() => {
     const isColliding = (elem1, elem2) => {
@@ -87,26 +86,20 @@ const Navbar = ({ isBlogPost }) => {
     };
 
     const detectColliding = (pointerRef, breakpointsRef) => {
-      const h1InfosCopy = h1Infos.slice();
-
+      const h1BreakpointInfosCopy = h1BreakpointInfos.slice();
       breakpointsRef.current.forEach((breakpoint) => {
         const breakpointId = breakpoint.id;
-        const targetH1Index = h1InfosCopy.findIndex((h1) => {
+        const targetH1Index = h1BreakpointInfosCopy.findIndex((h1) => {
           return h1.id === breakpointId;
         });
-        if (isColliding(pointerRef.current, breakpoint)) {
-          h1InfosCopy[targetH1Index] = {
-            ...h1InfosCopy[targetH1Index],
-            isBreakpointColliding: true,
-          };
-        } else {
-          h1InfosCopy[targetH1Index] = {
-            ...h1InfosCopy[targetH1Index],
-            isBreakpointColliding: false,
-          };
-        }
+        h1BreakpointInfosCopy[targetH1Index] = {
+          ...h1BreakpointInfosCopy[targetH1Index],
+          isBreakpointColliding: isColliding(pointerRef.current, breakpoint)
+            ? true
+            : false,
+        };
       });
-      setH1BreakpointInfos(h1InfosCopy);
+      setH1BreakpointInfos(h1BreakpointInfosCopy);
     };
 
     const setPosition = (e) => {
@@ -155,13 +148,11 @@ const Navbar = ({ isBlogPost }) => {
         { once: true }
       );
     };
-    navProgressRef.current.addEventListener("pointerdown", handlePointerDown);
+    const navProgressRefValue = navProgressRef.current;
+    navProgressRefValue.addEventListener("pointerdown", handlePointerDown);
     return () =>
-      navProgressRef.current.removeEventListener(
-        "pointerdown",
-        handlePointerDown
-      );
-  }, [h1Infos]);
+      navProgressRefValue.removeEventListener("pointerdown", handlePointerDown);
+  }, [h1BreakpointInfos]);
 
   const handleOpenSideBar = () => {
     setIsOpenSidebar(!isOpenSideBar);
@@ -187,7 +178,6 @@ const Navbar = ({ isBlogPost }) => {
                 <li
                   key={link.href}
                   className="rounded-md px-3 py-2 hover:bg-gray-200 mx-auto"
-                  onClick={handleOpenSideBar}
                 >
                   <Link to={link.href}>{link.label}</Link>
                 </li>
@@ -244,7 +234,7 @@ const Navbar = ({ isBlogPost }) => {
         <div
           ref={navProgressRef}
           className={`relative touch-none group h-1 hover:h-4 ${
-            isShowProgress ? "bg-blue-200" : "bg-transparent"
+            isShowProgress ? "bg-blue-100" : "bg-transparent"
           }`}
         >
           <div
@@ -255,11 +245,9 @@ const Navbar = ({ isBlogPost }) => {
           ></div>
           <div
             ref={navPointerRef}
-            className="absolute top-0 -translate-x-1/2 -translate-y-full z-20 hidden group-hover:block touch-none"
+            className="absolute top-0 w-4 h-4 bg-blue-800 -translate-x-1/2 z-20 hidden group-hover:block touch-none"
             style={{ left: pointerPosition.x }}
-          >
-            <FaMapMarker size={30} />
-          </div>
+          ></div>
           <ul>
             {h1BreakpointInfos.map(
               ({ text, id, topRatio, isBreakpointColliding }) => {
