@@ -24,35 +24,34 @@ const Navbar = ({ isBlogPost }) => {
 
   useEffect(() => {
     if (!isBlogPost) return;
-    const navbarWidth = navbarRef.current.offsetWidth;
-    const article = document.querySelector("article");
-    const articleTop = article.offsetTop;
-    window.addEventListener(
-      "scroll",
-      () => {
-        const scrollY = window.scrollY;
-        const pageHeight = document.documentElement.scrollHeight;
-        const windowHeight = window.innerHeight;
-        if (scrollY >= articleTop - 200) {
-          setIsShowProgress(true);
-        } else {
-          setIsShowProgress(false);
-        }
-        const scrollRatio =
-          Math.round(((scrollY + windowHeight) / pageHeight) * 10000) / 10000;
-        const scrollProgressWidth = navbarWidth * scrollRatio;
-        setProgressWidth(scrollProgressWidth);
-      },
-      []
-    );
-  });
+    const handleScroll = () => {
+      const navbarWidth = navbarRef.current.offsetWidth;
+      const article = document.querySelector("article");
+      const articleTop = article.offsetTop;
+      const scrollY = window.scrollY;
+      const pageHeight = document.documentElement.scrollHeight;
+      const windowHeight = window.innerHeight;
+      if (scrollY >= articleTop - 200) {
+        setIsShowProgress(true);
+      } else {
+        setIsShowProgress(false);
+      }
+      const scrollRatio =
+        Math.round(((scrollY + windowHeight) / pageHeight) * 10000) / 10000;
+      const scrollProgressWidth = navbarWidth * scrollRatio;
+      setProgressWidth(scrollProgressWidth);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   useEffect(() => {
     if (!isBlogPost) return;
     const getH1Infos = () => {
-      const h1Nodes = document.querySelectorAll("article h1");
       const pageHeight = document.documentElement.scrollHeight;
       const windowHeight = window.innerHeight;
-      const h1Titles = Array.apply(null, h1Nodes);
+      const h1Titles = [...document.querySelectorAll("article h1")];
       const h1Infos = h1Titles.map((h1) => {
         const h1TopRatio =
           Math.round(
@@ -67,10 +66,11 @@ const Navbar = ({ isBlogPost }) => {
         };
       });
       setH1Infos(h1Infos);
+      setH1ProgressInfos(h1Infos);
     };
     getH1Infos();
-    window.addEventListener("resize", () => getH1Infos());
-    return window.removeEventListener("resize", () => getH1Infos());
+    window.addEventListener("resize", getH1Infos);
+    return () => window.removeEventListener("resize", getH1Infos);
   }, []);
 
   useEffect(() => {
@@ -87,21 +87,18 @@ const Navbar = ({ isBlogPost }) => {
 
     const detectColliding = (pointerRef, breakpointsRef) => {
       const h1InfosCopy = h1Infos.slice();
-      console.log(h1Infos);
 
       breakpointsRef.current.forEach((breakpoint) => {
         const breakpointId = breakpoint.id;
-        const targetH1Index = h1InfosCopy.findIndex((elem) => {
-          return elem.id === breakpointId;
+        const targetH1Index = h1InfosCopy.findIndex((h1) => {
+          return h1.id === breakpointId;
         });
         if (isColliding(pointerRef.current, breakpoint)) {
-          // console.log("碰撞", breakpoint);
           h1InfosCopy[targetH1Index] = {
             ...h1InfosCopy[targetH1Index],
             isBreakpointColliding: true,
           };
         } else {
-          // console.log("沒碰撞", breakpoint);
           h1InfosCopy[targetH1Index] = {
             ...h1InfosCopy[targetH1Index],
             isBreakpointColliding: false,
@@ -112,27 +109,21 @@ const Navbar = ({ isBlogPost }) => {
     };
 
     const setProgressPosition = (e) => {
-      if (!e.target) return;
       const widthRatio =
         Math.round((e.clientX / navProgressRef.current.offsetWidth) * 10000) /
         10000;
       setProgress({ x: e.clientX, widthRatio: widthRatio });
     };
 
-    const pointerMoveHandler = (e) => {
+    const movePointer = (e) => {
       setProgressPosition(e);
       detectColliding(navPointerRef, navBreakpointsRef);
     };
 
-    navProgressRef.current.addEventListener("pointerdown", (e) => {
+    const handlePointerDown = (e) => {
       navProgressRef.current.setPointerCapture(e.pointerId);
-      // setProgressPosition(e);
-      // detectColliding(navPointerRef, navBreakpointsRef);
-      pointerMoveHandler(e);
-      navProgressRef.current.addEventListener(
-        "pointermove",
-        pointerMoveHandler
-      );
+      movePointer(e);
+      navProgressRef.current.addEventListener("pointermove", movePointer);
       navProgressRef.current.addEventListener(
         "pointerup",
         (e) => {
@@ -149,13 +140,19 @@ const Navbar = ({ isBlogPost }) => {
           });
           navProgressRef.current.removeEventListener(
             "pointermove",
-            pointerMoveHandler
+            movePointer
           );
         },
         { once: true }
       );
-    });
-  }, [navPointerRef, navBreakpointsRef, navProgressRef, h1Infos]);
+    };
+    navProgressRef.current.addEventListener("pointerdown", handlePointerDown);
+    return () =>
+      navProgressRef.current.removeEventListener(
+        "pointerdown",
+        handlePointerDown
+      );
+  }, [h1Infos]);
 
   const handleOpenSideBar = () => {
     setIsOpenSidebar(!isOpenSideBar);
