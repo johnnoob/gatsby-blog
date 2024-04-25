@@ -5,6 +5,7 @@ import { navlinks } from "../constants/link";
 import Button from "./Button";
 import { BsEnvelope, BsList } from "react-icons/bs";
 import { FaXmark } from "react-icons/fa6";
+import { FaMapMarker } from "react-icons/fa";
 
 const Navbar = ({ isBlogPost }) => {
   const navbarRef = useRef(null); // 偵測頁面瀏覽進度
@@ -14,12 +15,12 @@ const Navbar = ({ isBlogPost }) => {
   const [progressWidth, setProgressWidth] = useState(0);
   const [isShowProgress, setIsShowProgress] = useState(false);
   const [h1Infos, setH1Infos] = useState([]);
-  const [h1ProgressInfos, setH1ProgressInfos] = useState([]);
+  const [h1BreakpointInfos, setH1BreakpointInfos] = useState([]);
   const [isOpenSideBar, setIsOpenSidebar] = useState(false);
-  const [progress, setProgress] = useState({
+  const [pointerPosition, setPointerPosition] = useState({
     x: 0,
     widthRatio: 0,
-    wisdth: 0,
+    width: 0,
   });
 
   useEffect(() => {
@@ -66,7 +67,7 @@ const Navbar = ({ isBlogPost }) => {
         };
       });
       setH1Infos(h1Infos);
-      setH1ProgressInfos(h1Infos);
+      setH1BreakpointInfos(h1Infos);
     };
     getH1Infos();
     window.addEventListener("resize", getH1Infos);
@@ -105,18 +106,18 @@ const Navbar = ({ isBlogPost }) => {
           };
         }
       });
-      setH1ProgressInfos(h1InfosCopy);
+      setH1BreakpointInfos(h1InfosCopy);
     };
 
-    const setProgressPosition = (e) => {
+    const setPosition = (e) => {
       const widthRatio =
         Math.round((e.clientX / navProgressRef.current.offsetWidth) * 10000) /
         10000;
-      setProgress({ x: e.clientX, widthRatio: widthRatio });
+      setPointerPosition({ x: e.clientX, widthRatio: widthRatio });
     };
 
     const movePointer = (e) => {
-      setProgressPosition(e);
+      setPosition(e);
       detectColliding(navPointerRef, navBreakpointsRef);
     };
 
@@ -138,6 +139,14 @@ const Navbar = ({ isBlogPost }) => {
             left: 0,
             behavior: "smooth",
           });
+          setTimeout(() => {
+            const h1BreakpointInfosCleared = h1BreakpointInfos.map(
+              (breakpointInfo) => {
+                return { ...breakpointInfo, isBreakpointColliding: false };
+              }
+            );
+            setH1BreakpointInfos(h1BreakpointInfosCleared);
+          }, 2000);
           navProgressRef.current.removeEventListener(
             "pointermove",
             movePointer
@@ -189,7 +198,9 @@ const Navbar = ({ isBlogPost }) => {
       </div>
       <section className="fixed w-full z-10 bg-white shadow-sm" ref={navbarRef}>
         <header className={`max-container transition-all`}>
-          <nav className="flex justify-between items-center py-3 padding-x mx-auto">
+          <nav
+            className={`flex justify-between items-center py-3 padding-x mx-auto`}
+          >
             <Link to="/">
               <StaticImage
                 src="../images/Navbar/blog.png"
@@ -232,24 +243,25 @@ const Navbar = ({ isBlogPost }) => {
         </header>
         <div
           ref={navProgressRef}
-          className={`relative transition-all touch-none ${
+          className={`relative transition-all touch-none group h-1 hover:h-4 ${
             isShowProgress ? "bg-blue-200" : "bg-transparent"
           }`}
-          style={{ height: 4 }}
         >
           <div
-            className={`${
+            className={`transition-all h-1 group-hover:h-4 ${
               isShowProgress ? "bg-blue-500" : "bg-transparent"
             } z-10`}
-            style={{ width: progressWidth, height: 4 }}
+            style={{ width: progressWidth }}
           ></div>
           <div
             ref={navPointerRef}
-            className="absolute top-0 w-5 h-5 bg-blue-500 rounded-full"
-            style={{ left: progress.x }}
-          ></div>
+            className="absolute top-0 -translate-x-1/2 -translate-y-full z-20"
+            style={{ left: pointerPosition.x }}
+          >
+            <FaMapMarker size={30} />
+          </div>
           <ul>
-            {h1ProgressInfos.map(
+            {h1BreakpointInfos.map(
               ({ text, id, topRatio, isBreakpointColliding }) => {
                 return (
                   <li
@@ -264,10 +276,10 @@ const Navbar = ({ isBlogPost }) => {
                     }}
                     id={id}
                     key={id}
-                    className="absolute group"
+                    className="absolute hidden group-hover:block"
                     style={{ top: 0, left: `${topRatio * 100}%` }}
                   >
-                    <div className="bg-blue-200 w-1 h-4  mb-2 "></div>
+                    <div className="bg-blue-200 w-1 h-4 mb-2"></div>
                     <p
                       className={`rounded-lg bg-gray-100 -translate-x-1/2 px-2 py-1 ${
                         isBreakpointColliding ? "block" : "hidden"
