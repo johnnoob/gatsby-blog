@@ -21,6 +21,7 @@ const Navbar = ({ isBlogPost }) => {
     widthRatio: 0,
     width: 0,
   });
+  const [isTouch, setIstouch] = useState(false);
 
   useEffect(() => {
     if (!isBlogPost) return;
@@ -86,7 +87,9 @@ const Navbar = ({ isBlogPost }) => {
     };
 
     const detectColliding = (pointerRef, breakpointsRef) => {
-      const h1BreakpointInfosCopy = h1BreakpointInfos.slice();
+      const h1BreakpointInfosCopy = h1BreakpointInfos.map((breakpointInfo) => {
+        return { ...breakpointInfo, isBreakpointColliding: false };
+      });
       breakpointsRef.current.forEach((breakpoint) => {
         const breakpointId = breakpoint.id;
         const targetH1Index = h1BreakpointInfosCopy.findIndex((h1) => {
@@ -94,9 +97,7 @@ const Navbar = ({ isBlogPost }) => {
         });
         h1BreakpointInfosCopy[targetH1Index] = {
           ...h1BreakpointInfosCopy[targetH1Index],
-          isBreakpointColliding: isColliding(pointerRef.current, breakpoint)
-            ? true
-            : false,
+          isBreakpointColliding: isColliding(pointerRef.current, breakpoint),
         };
       });
       setH1BreakpointInfos(h1BreakpointInfosCopy);
@@ -116,11 +117,16 @@ const Navbar = ({ isBlogPost }) => {
 
     const handlePointerDown = (e) => {
       navProgressRef.current.setPointerCapture(e.pointerId);
-      movePointer(e);
+      setIstouch(true);
+      setPosition(e);
+      setTimeout(() => {
+        detectColliding(navPointerRef, navBreakpointsRef);
+      }, 100);
       navProgressRef.current.addEventListener("pointermove", movePointer);
       navProgressRef.current.addEventListener(
         "pointerup",
         (e) => {
+          setIstouch(false);
           const pageHeight = document.documentElement.scrollHeight;
           const windowHeight = window.innerHeight;
           const widthRatio =
@@ -139,7 +145,7 @@ const Navbar = ({ isBlogPost }) => {
               }
             );
             setH1BreakpointInfos(h1BreakpointInfosCleared);
-          }, 2000);
+          }, 0);
           navProgressRef.current.removeEventListener(
             "pointermove",
             movePointer
@@ -152,7 +158,7 @@ const Navbar = ({ isBlogPost }) => {
     navProgressRefValue.addEventListener("pointerdown", handlePointerDown);
     return () =>
       navProgressRefValue.removeEventListener("pointerdown", handlePointerDown);
-  }, [h1BreakpointInfos]);
+  }, [h1BreakpointInfos, isTouch]);
 
   const handleOpenSideBar = () => {
     setIsOpenSidebar(!isOpenSideBar);
@@ -233,21 +239,23 @@ const Navbar = ({ isBlogPost }) => {
         </header>
         <div
           ref={navProgressRef}
-          className={`relative touch-none group h-1 hover:h-4 ${
-            isShowProgress ? "bg-blue-100" : "bg-transparent"
-          }`}
+          className={`relative touch-none transition-all ease-linear ${
+            isShowProgress ? "bg-blue-300" : "bg-transparent"
+          } ${isTouch ? "h-4" : "h-1"}`}
         >
           <div
-            className={`h-1 group-hover:h-4 ${
-              isShowProgress ? "bg-blue-500" : "bg-transparent"
-            } z-10`}
+            className={`z-10 transition-all ease-linear ${
+              isShowProgress ? "bg-blue-600" : "bg-transparent"
+            } ${isTouch ? "h-4" : "h-1"}`}
             style={{ width: progressWidth }}
-          ></div>
+          />
           <div
             ref={navPointerRef}
-            className="absolute top-0 w-4 h-4 bg-blue-800 -translate-x-1/2 z-20 hidden group-hover:block touch-none"
+            className={`absolute top-0 w-6 h-6 bg-blue-800 rounded-full -translate-x-1/2  -translate-y-[4px] z-20 ${
+              isTouch ? "block" : "hidden"
+            }`}
             style={{ left: pointerPosition.x }}
-          ></div>
+          />
           <ul>
             {h1BreakpointInfos.map(
               ({ text, id, topRatio, isBreakpointColliding }) => {
@@ -264,12 +272,16 @@ const Navbar = ({ isBlogPost }) => {
                     }}
                     id={id}
                     key={id}
-                    className="absolute hidden group-hover:block"
+                    className="absolute"
                     style={{ top: 0, left: `${topRatio * 100}%` }}
                   >
-                    <div className="bg-black w-1 h-4 mb-2"></div>
+                    <div
+                      className={`bg-white w-1 h-4 mb-5 -translate-x-1/2 ${
+                        isTouch ? "block" : "hidden"
+                      }`}
+                    />
                     <p
-                      className={`rounded-lg bg-gray-100 -translate-x-1/2 px-2 py-1 ${
+                      className={`rounded-lg bg-blue-600 shadow-md -translate-x-1/2 px-3 py-2 text-white before:w-0 before:h-0 before:border-l-[10px] before:border-b-[12px] before:border-r-[10px]  before:border-l-transparent before:border-b-blue-600 before:border-r-transparent before:absolute before:bottom-full before:left-1/2 before:-translate-x-1/2 ${
                         isBreakpointColliding ? "block" : "hidden"
                       }`}
                     >
