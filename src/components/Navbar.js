@@ -272,7 +272,7 @@ const Navbar = ({ isBlogPost }) => {
                     }}
                     id={id}
                     key={id}
-                    className="absolute"
+                    className="absolute w-1 h-4"
                     style={{ top: 0, left: `${topRatio * 100}%` }}
                   >
                     <div
@@ -281,7 +281,7 @@ const Navbar = ({ isBlogPost }) => {
                       }`}
                     />
                     <p
-                      className={`rounded-lg bg-blue-600 shadow-md -translate-x-1/2 px-3 py-2 text-white before:w-0 before:h-0 before:border-l-[10px] before:border-b-[12px] before:border-r-[10px]  before:border-l-transparent before:border-b-blue-600 before:border-r-transparent before:absolute before:bottom-full before:left-1/2 before:-translate-x-1/2 ${
+                      className={`w-max rounded-lg bg-blue-600 shadow-md -translate-x-1/2 px-3 py-2 text-white before:w-0 before:h-0 before:border-l-[10px] before:border-b-[12px] before:border-r-[10px]  before:border-l-transparent before:border-b-blue-600 before:border-r-transparent before:absolute before:bottom-full before:left-1/2 before:-translate-x-1/2 ${
                         isBreakpointColliding ? "block" : "hidden"
                       }`}
                     >
