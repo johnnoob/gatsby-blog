@@ -5,7 +5,6 @@ import { navlinks } from "../constants/link";
 import Button from "./Button";
 import { BsEnvelope, BsList } from "react-icons/bs";
 import { FaXmark } from "react-icons/fa6";
-import { FaMapMarker } from "react-icons/fa";
 
 const Navbar = ({ isBlogPost }) => {
   const navbarRef = useRef(null); // 偵測頁面瀏覽進度
