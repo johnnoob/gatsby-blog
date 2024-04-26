@@ -292,6 +292,7 @@ const Navbar = ({ isBlogPost }) => {
               }
             )}
           </ul>
+          <div className=" h-5 bg-transparent"></div>
         </div>
       </section>
     </>
