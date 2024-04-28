@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 const useScrollIntersect = (contents) => {
+  contents = contents || [];
   // title h1的開合功能
   const initialIsOpenMap = {};
   contents.forEach((_, index) => {
@@ -19,7 +20,6 @@ const useScrollIntersect = (contents) => {
       let titleId = title.id.toLowerCase();
       initialIsIntersectingMap[`#${titleId}`] = false;
     });
-    // setIsIntersectingMap(initialIsIntersectingMap);
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
@@ -57,4 +57,17 @@ const useScrollIntersect = (contents) => {
   return { isOpenMap, isIntersectingMap, handleH1Open };
 };
 
-export default useScrollIntersect;
+const handleScrolltoTitle = (url) => {
+  const scrollToTitle = (url) => {
+    const title = document.querySelector(`article ${url}`);
+    if (title) {
+      window.scrollTo({
+        top: title.offsetTop - title.offsetHeight,
+        behavior: "smooth",
+      });
+    }
+  };
+  scrollToTitle(url);
+};
+
+export { useScrollIntersect, handleScrolltoTitle };

@@ -46,6 +46,23 @@ body {
     @apply mt-8
 }
 
+/* blog post iframe */
+article iframe {
+    @apply mx-auto my-4 aspect-[16/9] max-w-[560px] w-full
+}
+
+/* blog post image */
+.gatsby-resp-image-wrapper {
+    @apply mx-auto my-4
+}
+
+
+::-webkit-scrollbar-thumb {
+    @apply rounded-full
+}
+
+
+
 @layer components {
     .max-container {
             max-width: 1280px;

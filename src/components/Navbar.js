@@ -74,6 +74,7 @@ const Navbar = ({ isBlogPost }) => {
   }, [isBlogPost]);
 
   useEffect(() => {
+    if (!isBlogPost) return;
     const isColliding = (elem1, elem2) => {
       const rect1 = elem1.getBoundingClientRect();
       const rect2 = elem2.getBoundingClientRect();
@@ -157,7 +158,7 @@ const Navbar = ({ isBlogPost }) => {
     navProgressRefValue.addEventListener("pointerdown", handlePointerDown);
     return () =>
       navProgressRefValue.removeEventListener("pointerdown", handlePointerDown);
-  }, [h1BreakpointInfos, isTouch]);
+  }, [isBlogPost, h1BreakpointInfos, isTouch]);
 
   const handleOpenSideBar = () => {
     setIsOpenSidebar(!isOpenSideBar);
@@ -239,8 +240,10 @@ const Navbar = ({ isBlogPost }) => {
         <div
           ref={navProgressRef}
           className={`relative touch-none transition-all ease-linear ${
-            isShowProgress ? "bg-blue-300" : "bg-transparent"
-          } ${isTouch ? "h-4" : "h-1"}`}
+            !isBlogPost && "hidden"
+          } ${isShowProgress ? "bg-blue-300" : "bg-transparent"} ${
+            isTouch ? "h-4" : "h-1"
+          }`}
         >
           <div
             className={`z-10 transition-all ease-linear ${
