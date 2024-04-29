@@ -17,6 +17,7 @@ const Card = ({
       <div className="flex items-start gap-4">
         <GatsbyImage
           image={hero_image}
+          alt={title}
           className="aspect-[16/9] shrink-0 w-[350px] rounded-xl"
         />
         <div className="flex flex-col items-start">

@@ -1,10 +1,13 @@
 import React from "react";
 
-const Select = ({ handleSelect, isAscending }) => {
+const Select = ({ options, handleSelect, defaultValue }) => {
   return (
-    <select onChange={handleSelect}>
-      <option value={false}>新至舊</option>
-      <option value={true}>舊至新</option>
+    <select onChange={handleSelect} defaultValue={defaultValue}>
+      {options.map((option, index) => (
+        <option key={index} value={option.value}>
+          {option.label}
+        </option>
+      ))}
     </select>
   );
 };
