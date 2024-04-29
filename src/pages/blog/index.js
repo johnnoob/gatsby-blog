@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../../components/layout";
 import { useStaticQuery, graphql } from "gatsby";
 import { getImage } from "gatsby-plugin-image";
-import PostCard from "../../components/PostCardModified";
+import { Card, Select } from "../../components/blogPage/index";
 
 const BlogPage = () => {
   const {
@@ -17,7 +17,7 @@ const BlogPage = () => {
             date(formatString: "YYYY/MM/DD")
             hero_image {
               childImageSharp {
-                gatsbyImageData(placeholder: TRACED_SVG)
+                gatsbyImageData(placeholder: BLURRED)
               }
             }
             slug
@@ -29,24 +29,45 @@ const BlogPage = () => {
       }
     }
   `);
-  const posts = nodes.map((node) => {
+  const initialPosts = nodes.map((node) => {
     return {
       ...node.frontmatter,
       hero_image: getImage(node.frontmatter.hero_image),
       excerpt: node.excerpt,
     };
   });
-  console.log(posts);
-  const postCards = posts.map((post) => {
-    return <PostCard key={post.slug} {...post} />;
-  });
+  const [isDateAscending, setIsDateAscending] = useState(false);
+  const handleSelectDateSort = (e) => {
+    setIsDateAscending(e.target.value === "true");
+  };
+  const [posts, setPosts] = useState(initialPosts);
+
+  useEffect(() => {
+    setPosts((prevPosts) => {
+      const postsCopy = [...prevPosts];
+      postsCopy.sort((a, b) => {
+        if (isDateAscending) {
+          return new Date(a.date) - new Date(b.date);
+        } else {
+          return new Date(b.date) - new Date(a.date);
+        }
+      });
+      return postsCopy;
+    });
+  }, [isDateAscending]);
 
   return (
     <Layout isBlogPost={false}>
-      <section className="max-container padding-x pt-32">
-        <div>Time</div>
+      <section className="padding-x pt-32">
+        <div>
+          <Select handleSelect={handleSelectDateSort} />
+        </div>
         <div className="flex flex-center items-start">
-          <main className="grid grid-cols-3 gap-5">{postCards}</main>
+          <main className="flex flex-col justify-start gap-5">
+            {posts.map((post) => {
+              return <Card key={post.slug} {...post} />;
+            })}
+          </main>
           <div>filter</div>
         </div>
       </section>
