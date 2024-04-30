@@ -4,8 +4,9 @@ import { useStaticQuery, graphql } from "gatsby";
 import { getImage } from "gatsby-plugin-image";
 import { Card, Select } from "../../components/blogPage/index";
 import { dateAscendingOptions } from "../../constants/selections";
+import { set } from "date-fns";
 
-const BlogPage = () => {
+const BlogPage = ({ location }) => {
   const {
     allMdx: { nodes },
   } = useStaticQuery(graphql`
@@ -14,6 +15,7 @@ const BlogPage = () => {
         nodes {
           frontmatter {
             category
+            subcategory
             author
             date(formatString: "YYYY/MM/DD")
             hero_image {
@@ -54,6 +56,41 @@ const BlogPage = () => {
 
   const handleCategoryClick = (e) => {
     setCategory(e.target.value);
+  };
+
+  const subcategories = [
+    ...new Set(initialPosts.map((post) => post.subcategory)),
+  ];
+  const [subcategory, setSubcategory] = useState("");
+  const categoryToSubcategoryMap = initialPosts.reduce(
+    (accumulator, currentPost) => {
+      const { subcategory: currentPostSubcategory } = currentPost;
+      accumulator.全部 += 1;
+      if (!accumulator.hasOwnProperty(currentPostSubcategory)) {
+        accumulator[currentPostSubcategory] = 1;
+      } else {
+        accumulator[currentPostSubcategory] += 1;
+      }
+      return accumulator;
+    },
+    { 全部: 0 }
+  );
+
+  const subcategoryToNumOfPostsMap = initialPosts.reduce(
+    (accumulator, currentPost) => {
+      const { subcategory: currentPostSubcategory } = currentPost;
+      accumulator.全部 += 1;
+      if (!accumulator.hasOwnProperty(currentPostSubcategory)) {
+        accumulator[currentPostSubcategory] = 1;
+      } else {
+        accumulator[currentPostSubcategory] += 1;
+      }
+      return accumulator;
+    },
+    { 全部: 0 }
+  );
+  const handleSubcategoryClick = (e) => {
+    setSubcategory(e.target.value);
   };
 
   const categoryToNumOfPostsMap = initialPosts.reduce(
@@ -102,6 +139,13 @@ const BlogPage = () => {
   };
 
   useEffect(() => {
+    const selectedTag = location?.state?.selectedTag;
+    if (selectedTag !== undefined) {
+      setSelectedTags([selectedTag]);
+    }
+  }, [location]);
+
+  useEffect(() => {
     const isArraySubset = (subset, superset) => {
       return subset.every((element) => superset.includes(element));
     };
@@ -113,9 +157,17 @@ const BlogPage = () => {
       });
     } else {
       filteredPosts = initialPosts.filter((post) => {
-        const { tags: postTags, category: postCategory } = post;
+        const {
+          tags: postTags,
+          category: postCategory,
+          subcategory: postSubcategory,
+        } = post;
         const isSelectedTagsInPost = isArraySubset(selectedTags, postTags);
-        return isSelectedTagsInPost && postCategory === category;
+        return (
+          isSelectedTagsInPost &&
+          postCategory === category &&
+          postSubcategory === subcategory
+        );
       });
     }
 
@@ -127,7 +179,7 @@ const BlogPage = () => {
       }
     });
     setPosts(sortedPosts);
-  }, [category, isDateAscending, initialPosts, selectedTags]);
+  }, [category, subcategory, isDateAscending, initialPosts, selectedTags]);
 
   const isTagSelected = (tag) => selectedTags.includes(tag);
 
@@ -139,7 +191,7 @@ const BlogPage = () => {
   return (
     <Layout isBlogPost={false}>
       <section className="max-w-[1440px] padding-x pt-32">
-        <div>
+        <div className="my-5">
           <Select
             options={dateAscendingOptions}
             handleSelect={handleDateSortSelect}
@@ -160,9 +212,13 @@ const BlogPage = () => {
                 onClick={handleArea}
               >
                 類別
-                <span className="rounded-full inline-block w-6 h-6 bg-red-200">
-                  {selectedTags.length > 0 && selectedTags.length}
-                </span>
+              </button>
+              <button
+                className="flex items-center px-2 py-1 bg-slate-200 rounded-lg text-lg"
+                value="subcategory"
+                onClick={handleArea}
+              >
+                子類別
               </button>
               <button
                 className="flex items-center"
@@ -192,6 +248,22 @@ const BlogPage = () => {
               ))}
             </div>
             <div
+              className={`flex flex-col justify-start items-start ${
+                area === "subcategory" ? "block" : "hidden"
+              }`}
+            >
+              {subcategories.map((subcategory) => (
+                <button
+                  key={subcategory}
+                  value={subcategory}
+                  onClick={handleSubcategoryClick}
+                >
+                  {subcategory}
+                  <span>{subcategoryToNumOfPostsMap[subcategory]}</span>
+                </button>
+              ))}
+            </div>
+            <div
               className={`flex flex-wrap gap-1 ${
                 area === "tags" ? "block" : "hidden"
               }`}
@@ -210,6 +282,27 @@ const BlogPage = () => {
                   {`#${tag}`}
                 </button>
               ))}
+            </div>
+            <hr />
+            <div>
+              {category}
+              {subcategory}
+              <div className={`flex flex-wrap gap-1`}>
+                {selectedTags.map((tag) => (
+                  <button
+                    key={tag}
+                    value={tag}
+                    className={`p-2 rounded-3xl text-sm font-light ${
+                      isTagSelected(tag)
+                        ? "bg-slate-500 text-white"
+                        : "bg-slate-200"
+                    }`}
+                    onClick={handleSelectedTags}
+                  >
+                    {`#${tag}`}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>

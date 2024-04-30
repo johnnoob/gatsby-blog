@@ -73,7 +73,8 @@ const BlogPost = ({ data, children }) => {
             <div className="flex flex-wrap justify-center gap-2">
               {tags.map((tag) => (
                 <Link
-                  to={`/${tag}`}
+                  to={`/blog`}
+                  state={{ selectedTag: tag }}
                   className="px-3 py-1 font-light text-sm bg-slate-200 capitalize rounded-3xl border-[1px] hover:border-black"
                 >
                   {`#${tag}`}
