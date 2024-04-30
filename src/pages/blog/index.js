@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Layout from "../../components/layout";
 import { useStaticQuery, graphql } from "gatsby";
 import { getImage } from "gatsby-plugin-image";
@@ -30,13 +30,17 @@ const BlogPage = () => {
       }
     }
   `);
-  const initialPosts = nodes.map((node) => {
-    return {
-      ...node.frontmatter,
-      hero_image: getImage(node.frontmatter.hero_image),
-      excerpt: node.excerpt,
-    };
-  });
+  const initialPosts = useMemo(
+    () =>
+      nodes.map((node) => {
+        return {
+          ...node.frontmatter,
+          hero_image: getImage(node.frontmatter.hero_image),
+          excerpt: node.excerpt,
+        };
+      }),
+    [nodes]
+  );
   const [posts, setPosts] = useState(initialPosts);
   const [isDateAscending, setIsDateAscending] = useState(false);
   const handleDateSortSelect = (e) => {
@@ -84,14 +88,35 @@ const BlogPage = () => {
     },
     { 全部: [] }
   );
-  console.log(categoryToTagsMap);
+
+  const [selectedTags, setSelectedTags] = useState([]);
+  const handleSelectedTags = (e) => {
+    const targetTag = e.target.value;
+    if (selectedTags.includes(targetTag)) {
+      setSelectedTags((prevSelectedTags) =>
+        prevSelectedTags.filter((tag) => tag !== targetTag)
+      );
+    } else {
+      setSelectedTags((prevSelectedTags) => [...prevSelectedTags, targetTag]);
+    }
+  };
 
   useEffect(() => {
+    const isArraySubset = (subset, superset) => {
+      return subset.every((element) => superset.includes(element));
+    };
     let filteredPosts;
     if (category === "全部") {
-      filteredPosts = initialPosts;
+      filteredPosts = initialPosts.filter((post) => {
+        const { tags: postTags } = post;
+        return isArraySubset(selectedTags, postTags);
+      });
     } else {
-      filteredPosts = initialPosts.filter((post) => post.category === category);
+      filteredPosts = initialPosts.filter((post) => {
+        const { tags: postTags, category: postCategory } = post;
+        const isSelectedTagsInPost = isArraySubset(selectedTags, postTags);
+        return isSelectedTagsInPost && postCategory === category;
+      });
     }
 
     const sortedPosts = [...filteredPosts].sort((a, b) => {
@@ -102,11 +127,18 @@ const BlogPage = () => {
       }
     });
     setPosts(sortedPosts);
-  }, [category, isDateAscending]);
+  }, [category, isDateAscending, initialPosts, selectedTags]);
+
+  const isTagSelected = (tag) => selectedTags.includes(tag);
+
+  const [area, setArea] = useState("category");
+  const handleArea = (e) => {
+    setArea(e.target.value);
+  };
 
   return (
     <Layout isBlogPost={false}>
-      <section className="padding-x pt-32">
+      <section className="max-w-[1440px] padding-x pt-32">
         <div>
           <Select
             options={dateAscendingOptions}
@@ -120,8 +152,34 @@ const BlogPage = () => {
               return <Card key={post.slug} {...post} />;
             })}
           </main>
-          <div>
-            <div className="flex flex-wrap justify-start items-center">
+          <div className="relative shrink-0 w-[300px] p-3 border-[1px]">
+            <div className="flex items-center gap-2 flex-wrap mb-3">
+              <button
+                className="flex items-center px-2 py-1 bg-slate-200 rounded-lg text-lg"
+                value="category"
+                onClick={handleArea}
+              >
+                類別
+                <span className="rounded-full inline-block w-6 h-6 bg-red-200">
+                  {selectedTags.length > 0 && selectedTags.length}
+                </span>
+              </button>
+              <button
+                className="flex items-center"
+                value="tags"
+                onClick={handleArea}
+              >
+                標籤
+                <span className="rounded-full inline-block w-6 h-6 bg-red-200">
+                  {selectedTags.length > 0 && selectedTags.length}
+                </span>
+              </button>
+            </div>
+            <div
+              className={`flex flex-col justify-start items-start ${
+                area === "category" ? "block" : "hidden"
+              }`}
+            >
               {categories.map((category) => (
                 <button
                   key={category}
@@ -133,10 +191,25 @@ const BlogPage = () => {
                 </button>
               ))}
             </div>
-            <div className="flex flex-wrap">
-              {/* {categoryToTagsMap[category].map((tag) => (
-                <button>{tag}</button>
-              ))} */}
+            <div
+              className={`flex flex-wrap gap-1 ${
+                area === "tags" ? "block" : "hidden"
+              }`}
+            >
+              {categoryToTagsMap[category].map((tag) => (
+                <button
+                  key={tag}
+                  value={tag}
+                  className={`p-2 rounded-3xl text-sm font-light ${
+                    isTagSelected(tag)
+                      ? "bg-slate-500 text-white"
+                      : "bg-slate-200"
+                  }`}
+                  onClick={handleSelectedTags}
+                >
+                  {`#${tag}`}
+                </button>
+              ))}
             </div>
           </div>
         </div>

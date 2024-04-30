@@ -1,12 +1,31 @@
-import React from "react";
-import { StaticImage } from "gatsby-plugin-image";
+import React, { useState } from "react";
+import { DateRange } from "react-date-range";
+// import * as locales from "react-date-range/dist/locale";
+import { zhTW } from "date-fns/locale";
 
-const TestPage = () => {
+function MyCalendar() {
+  const [state, setState] = useState([
+    {
+      startDate: new Date(),
+      endDate: null,
+      key: "selection",
+    },
+  ]);
+
+  const handleDateChange = (item) => {
+    console.log(item.selection);
+    setState([item.selection]);
+  };
+
   return (
-    <div className="bg-green-100 p-10">
-      <StaticImage src="../images/person1.png" />
-    </div>
+    <DateRange
+      editableDateInputs={true}
+      onChange={handleDateChange}
+      moveRangeOnFirstSelection={false}
+      ranges={state}
+      locale={zhTW}
+    />
   );
-};
+}
 
-export default TestPage;
+export default MyCalendar;
