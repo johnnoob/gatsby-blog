@@ -32,7 +32,7 @@ const BlogPage = ({ location }) => {
       }
     }
   `);
-  const initialPosts = useMemo(
+  const allPosts = useMemo(
     () =>
       nodes.map((node) => {
         return {
@@ -45,7 +45,7 @@ const BlogPage = ({ location }) => {
   );
   const categoryToSubcategoryToTagsMap = useMemo(
     () =>
-      initialPosts.reduce(
+      allPosts.reduce(
         (accumulator, currentPost) => {
           const {
             category: currentPostCategory,
@@ -103,80 +103,80 @@ const BlogPage = ({ location }) => {
         },
         { numOfPosts: 0, categories: {} }
       ),
-    [initialPosts]
+    [allPosts]
   );
-  console.log(categoryToSubcategoryToTagsMap);
+  // console.log(categoryToSubcategoryToTagsMap);
 
-  const categoriesMap = {};
-  for (let key in categoryToSubcategoryToTagsMap["categories"]) {
-    categoriesMap[key] = categoryToSubcategoryToTagsMap["categories"][key];
-  }
+  const { categories } = categoryToSubcategoryToTagsMap;
+  const categoryToNumOfPostsMap = Object.fromEntries(
+    Object.entries(categories).map(([key, value]) => [key, value.numOfPosts])
+  );
 
-  const subcategoriesMap = {};
-  for (let key in categoryToSubcategoryToTagsMap["categories"]) {
-    for (let subkey in categoryToSubcategoryToTagsMap["categories"][key][
-      "subcategories"
-    ]) {
-      subcategoriesMap[subkey] =
-        categoryToSubcategoryToTagsMap["categories"][key]["subcategories"][
-          subkey
-        ];
+  const subcategoryToNumOfPostsMap = {};
+  for (let [key, value] of Object.entries(
+    categoryToSubcategoryToTagsMap.categories
+  )) {
+    for (let [subkey, subvalue] of Object.entries(value.subcategories)) {
+      subcategoryToNumOfPostsMap[subkey] = subvalue.numOfPosts;
     }
   }
-  console.log(subcategoriesMap);
 
-  let allTags = [];
-  for (let key in categoryToSubcategoryToTagsMap["categories"]) {
-    allTags.push(...categoryToSubcategoryToTagsMap["categories"][key]["tags"]);
-  }
-  allTags = [...new Set(allTags)];
+  let allTags = [
+    ...new Set(
+      Object.values(categoryToSubcategoryToTagsMap.categories).flatMap(
+        (category) => category.tags
+      )
+    ),
+  ];
+  useEffect(() => {
+    setPosts(allPosts);
+  }, [allPosts]);
+  console.log(allPosts);
 
-  const [posts, setPosts] = useState(initialPosts);
+  const [posts, setPosts] = useState(allPosts);
   const [isDateAscending, setIsDateAscending] = useState(false);
-  const [targetCategory, setTargetCategory] = useState("易經推演宇宙");
-  const [targetSubcategory, setTargetSubcategory] = useState("推導人生");
+  const [targetCategories, setTargetCategories] = useState([]);
+  const [targetSubcategories, setTargetSubcategories] = useState([]);
   const [targetTags, setTargetTags] = useState([]);
   const [categoryOptions, setCategoryOptions] = useState(
-    Object.keys(categoriesMap)
+    Object.keys(categoryToNumOfPostsMap)
   );
   const [subcategoryOptions, setSubcategoryOptions] = useState(
-    Object.keys(subcategoriesMap)
+    Object.keys(subcategoryToNumOfPostsMap)
   );
   const [tagOptions, setTagOptions] = useState(allTags);
   const [area, setArea] = useState("category");
-
-  useEffect(() => {
-    setSubcategoryOptions(
-      Object.keys(
-        categoryToSubcategoryToTagsMap["categories"][targetCategory][
-          "subcategories"
-        ]
-      )
-    );
-  }, [categoryToSubcategoryToTagsMap, targetCategory]);
-
-  useEffect(() => {
-    if (
-      !categoryToSubcategoryToTagsMap["categories"][targetCategory][
-        "subcategories"
-      ].hasOwnProperty(targetSubcategory)
-    )
-      return;
-    setTagOptions(
-      categoryToSubcategoryToTagsMap["categories"][targetCategory][
-        "subcategories"
-      ][targetSubcategory]["tags"]
-    );
-  }, [categoryToSubcategoryToTagsMap, targetCategory, targetSubcategory]);
 
   const handleDateSortSelect = (e) => {
     setIsDateAscending(e.target.value === "true");
   };
   const handleCategoryClick = (e) => {
-    setTargetCategory(e.target.value);
+    const targetCategory = e.target.value;
+    if (targetCategories.includes(targetCategory)) {
+      setTargetCategories((prevTargetCategories) =>
+        prevTargetCategories.filter((category) => category !== targetCategory)
+      );
+    } else {
+      setTargetCategories((prevTargetCategories) => [
+        ...prevTargetCategories,
+        targetCategory,
+      ]);
+    }
   };
   const handleSubcategoryClick = (e) => {
-    setTargetSubcategory(e.target.value);
+    const targetSubcategory = e.target.value;
+    if (targetSubcategories.includes(targetSubcategory)) {
+      setTargetSubcategories((prevTargetSubcategories) =>
+        prevTargetSubcategories.filter(
+          (subcategory) => subcategory !== targetSubcategory
+        )
+      );
+    } else {
+      setTargetSubcategories((prevTargetSubcategories) => [
+        ...prevTargetSubcategories,
+        targetSubcategory,
+      ]);
+    }
   };
   const handleSelectedTags = (e) => {
     const targetTag = e.target.value;
@@ -198,27 +198,24 @@ const BlogPage = ({ location }) => {
 
   useEffect(() => {
     const isArraySubset = (subset, superset) => {
-      return subset.every((element) => superset.includes(element));
+      return subset.some((element) => superset.includes(element));
     };
-    let filteredPosts;
-    if (targetCategory === "all") {
-      filteredPosts = initialPosts;
-    } else {
-      filteredPosts = initialPosts.filter((post) => {
-        const {
-          tags: postTags,
-          category: postCategory,
-          subcategory: postSubcategory,
-        } = post;
-        const isSelectedTagsInPost = isArraySubset(targetTags, postTags);
-        return (
-          isSelectedTagsInPost &&
-          postCategory === targetCategory &&
-          postSubcategory === targetSubcategory
-        );
-      });
-    }
-
+    // 抓出category在targetCategories中的文章
+    let filteredPosts = allPosts.filter((post) => {
+      if (targetCategories.length === 0) return true;
+      return targetCategories.includes(post.category);
+    });
+    // 抓出subcategory在targetSubcategories中的文章;
+    filteredPosts = filteredPosts.filter((post) => {
+      if (targetSubcategories.length === 0) return true;
+      return targetSubcategories.includes(post.subcategory);
+    });
+    // 抓出tag在targetTags中的文章;
+    filteredPosts = filteredPosts.filter((post) => {
+      if (targetTags.length === 0) return true;
+      return isArraySubset(targetTags, post.tags);
+    });
+    // 依時間排序
     const sortedPosts = [...filteredPosts].sort((a, b) => {
       if (isDateAscending) {
         return new Date(a.date) - new Date(b.date);
@@ -226,13 +223,14 @@ const BlogPage = ({ location }) => {
         return new Date(b.date) - new Date(a.date);
       }
     });
+    console.log(filteredPosts);
     setPosts(sortedPosts);
   }, [
-    targetCategory,
-    targetSubcategory,
-    isDateAscending,
-    initialPosts,
+    targetCategories,
+    targetSubcategories,
     targetTags,
+    isDateAscending,
+    allPosts,
   ]);
 
   const isTagSelected = (tag) => targetTags.includes(tag);
@@ -251,10 +249,12 @@ const BlogPage = ({ location }) => {
           />
         </div>
         <div className="flex flex-center items-start">
-          <main className="flex flex-col justify-start gap-5">
-            {posts.map((post) => {
-              return <Card key={post.slug} {...post} />;
-            })}
+          <main className="flex flex-col justify-start gap-5 w-full">
+            {posts.length == 0
+              ? "無內容"
+              : posts.map((post) => {
+                  return <Card key={post.slug} {...post} />;
+                })}
           </main>
           <div className="relative shrink-0 w-[300px] p-3 border-[1px]">
             <div className="flex items-center gap-2 flex-wrap mb-3">
@@ -288,44 +288,40 @@ const BlogPage = ({ location }) => {
                 area === "category" ? "block" : "hidden"
               }`}
             >
-              {Object.keys(categoryToSubcategoryToTagsMap["categories"]).map(
-                (category) => (
-                  <button
-                    key={category}
-                    value={category}
-                    onClick={handleCategoryClick}
-                  >
-                    {category}
-                    <span>
-                      {
-                        categoryToSubcategoryToTagsMap["categories"][category][
-                          "numOfPosts"
-                        ]
-                      }
-                    </span>
-                  </button>
-                )
-              )}
+              {categoryOptions.map((categoryOption, index) => (
+                <button
+                  key={index}
+                  value={categoryOption}
+                  onClick={handleCategoryClick}
+                  className={`${
+                    targetCategories.includes(categoryOption)
+                      ? "bg-gray-400"
+                      : "bg-gray-100"
+                  }`}
+                >
+                  {categoryOption}
+                  <span>{categoryToNumOfPostsMap[categoryOption]}</span>
+                </button>
+              ))}
             </div>
             <div
               className={`flex flex-col justify-start items-start ${
                 area === "subcategory" ? "block" : "hidden"
               }`}
             >
-              {subcategoryOptions.map((subcategory) => (
+              {subcategoryOptions.map((subcategoryOption, index) => (
                 <button
-                  key={subcategory}
-                  value={subcategory}
+                  key={index}
+                  value={subcategoryOption}
                   onClick={handleSubcategoryClick}
+                  className={`${
+                    targetSubcategories.includes(subcategoryOption)
+                      ? "bg-gray-400"
+                      : "bg-gray-100"
+                  }`}
                 >
-                  {subcategory}
-                  <span>
-                    {
-                      categoryToSubcategoryToTagsMap["categories"][
-                        targetCategory
-                      ]["subcategories"]?.[subcategory]?.["numOfPosts"]
-                    }
-                  </span>
+                  {subcategoryOption}
+                  <span>{subcategoryToNumOfPostsMap[subcategoryOption]}</span>
                 </button>
               ))}
             </div>
@@ -334,25 +330,23 @@ const BlogPage = ({ location }) => {
                 area === "tags" ? "block" : "hidden"
               }`}
             >
-              {/* {categoryToTagsMap[category].map((tag) => (
+              {tagOptions.map((tagOption) => (
                 <button
-                  key={tag}
-                  value={tag}
-                  className={`p-2 rounded-3xl text-sm font-light ${
-                    isTagSelected(tag)
-                      ? "bg-slate-500 text-white"
-                      : "bg-slate-200"
+                  key={tagOption}
+                  value={tagOption}
+                  className={`${
+                    targetTags.includes(tagOption)
+                      ? "bg-gray-400"
+                      : "bg-gray-100"
                   }`}
                   onClick={handleSelectedTags}
                 >
-                  {`#${tag}`}
+                  {`#${tagOption}`}
                 </button>
-              ))} */}
+              ))}
             </div>
             <hr />
             <div>
-              {targetCategory}
-              {targetSubcategory}
               <div className={`flex flex-wrap gap-1`}>
                 {/* {targetTags.map((tag) => (
                   <button
