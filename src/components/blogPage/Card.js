@@ -28,9 +28,9 @@ const Card = ({
           <h2 className="text-lg font-semibold line-clamp-2">{title}</h2>
           <p className="text-gray-p line-clamp-2">{excerpt}</p>
           <div className="flex justify-start items-center">
-            <div>
+            <div className="flex items-center gap-1">
               <BsCalendar4Week />
-              <p className="text-sm">{date}</p>
+              <p className="text-sm">{date}•</p>
             </div>
             <div className="flex">
               <p>{author}</p>
