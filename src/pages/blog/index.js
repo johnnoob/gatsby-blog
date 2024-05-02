@@ -2,7 +2,13 @@ import React, { useEffect, useState, useMemo } from "react";
 import Layout from "../../components/layout";
 import { useStaticQuery, graphql } from "gatsby";
 import { getImage } from "gatsby-plugin-image";
-import { Card, Select, useFilterSelect } from "../../components/blogPage/index";
+import {
+  Card,
+  Select,
+  useFilterSelect,
+  useNotFoundItems,
+  useFilteredAndSortedPosts,
+} from "../../components/blogPage/index";
 import { dateAscendingOptions } from "../../constants/selections";
 
 const BlogPage = ({ location }) => {
@@ -107,38 +113,58 @@ const BlogPage = ({ location }) => {
   // console.log(categoryToSubcategoryToTagsMap);
 
   const { categories } = categoryToSubcategoryToTagsMap;
-  const categoryToNumOfPostsMap = Object.fromEntries(
-    Object.entries(categories).map(([key, value]) => [key, value.numOfPosts])
-  );
+  const categoryToNumOfPostsMap = useMemo(() => {
+    return Object.fromEntries(
+      Object.entries(categories).map(([key, value]) => [key, value.numOfPosts])
+    );
+  }, [categories]);
 
-  const subcategoryToNumOfPostsMap = {};
-  for (let [key, value] of Object.entries(
-    categoryToSubcategoryToTagsMap.categories
-  )) {
-    for (let [subkey, subvalue] of Object.entries(value.subcategories)) {
-      subcategoryToNumOfPostsMap[subkey] = subvalue.numOfPosts;
+  const subcategoryToNumOfPostsMap = useMemo(() => {
+    const subcategoryMap = {};
+    for (const [key, value] of Object.entries(
+      categoryToSubcategoryToTagsMap.categories
+    )) {
+      for (const [subkey, subvalue] of Object.entries(value.subcategories)) {
+        subcategoryMap[subkey] = subvalue.numOfPosts;
+      }
     }
-  }
+    return subcategoryMap;
+  }, [categoryToSubcategoryToTagsMap.categories]);
 
-  let allTags = [
-    ...new Set(
-      Object.values(categoryToSubcategoryToTagsMap.categories).flatMap(
-        (category) => category.tags
-      )
-    ),
-  ];
-  useEffect(() => {
-    setPosts(allPosts);
-  }, [allPosts]);
-  // console.log(allPosts);
-
-  const [posts, setPosts] = useState(allPosts);
+  const allTags = useMemo(() => {
+    return [
+      ...new Set(
+        Object.values(categoryToSubcategoryToTagsMap.categories).flatMap(
+          (category) => category.tags
+        )
+      ),
+    ];
+  }, [categoryToSubcategoryToTagsMap.categories]);
   const [isDateAscending, setIsDateAscending] = useState(false);
   const [targetCategories, setTargetCategories, handleCategorySelect] =
     useFilterSelect([]);
   const [targetSubcategories, setTargetSubcategories, handleSubcategorySelect] =
     useFilterSelect([]);
   const [targetTags, setTargetTags, handleTagSelect] = useFilterSelect([]);
+  const posts = useFilteredAndSortedPosts(
+    allPosts,
+    targetCategories,
+    targetSubcategories,
+    targetTags,
+    isDateAscending
+  );
+  const { notFoundCategories, notFoundSubcategories, notFoundTags } =
+    useNotFoundItems(
+      posts,
+      targetCategories,
+      targetSubcategories,
+      targetTags,
+      allTags,
+      allPosts,
+      categoryToNumOfPostsMap,
+      subcategoryToNumOfPostsMap
+    );
+  console.log(notFoundCategories, notFoundSubcategories, notFoundTags);
   const [categoryOptions, setCategoryOptions] = useState(
     Object.keys(categoryToNumOfPostsMap)
   );
@@ -147,7 +173,6 @@ const BlogPage = ({ location }) => {
   );
   const [tagOptions, setTagOptions] = useState(allTags);
   const [area, setArea] = useState("category");
-
   const handleDateSortSelect = (e) => {
     setIsDateAscending(e.target.value === "true");
   };
@@ -159,73 +184,12 @@ const BlogPage = ({ location }) => {
     }
   }, [location]);
 
-  useEffect(() => {
-    const isArraySubset = (subset, superset) => {
-      return subset.some((element) => superset.includes(element));
-    };
-    // 抓出category在targetCategories中的文章
-    let filteredPosts = allPosts.filter((post) => {
-      if (targetCategories.length === 0) return true;
-      return targetCategories.includes(post.category);
-    });
-    // 抓出subcategory在targetSubcategories中的文章;
-    filteredPosts = filteredPosts.filter((post) => {
-      if (targetSubcategories.length === 0) return true;
-      return targetSubcategories.includes(post.subcategory);
-    });
-    // 抓出tag在targetTags中的文章;
-    filteredPosts = filteredPosts.filter((post) => {
-      if (targetTags.length === 0) return true;
-      return isArraySubset(targetTags, post.tags);
-    });
-    // 依時間排序
-    const sortedPosts = [...filteredPosts].sort((a, b) => {
-      if (isDateAscending) {
-        return new Date(a.date) - new Date(b.date);
-      } else {
-        return new Date(b.date) - new Date(a.date);
-      }
-    });
-    setPosts(sortedPosts);
-  }, [
-    targetCategories,
-    targetSubcategories,
-    targetTags,
-    isDateAscending,
-    allPosts,
-  ]);
-
-  useEffect(() => {
-    const filteredPosts = posts.reduce(
-      (acc, post) => {
-        acc.categories.add(post.category);
-        acc.subcategories.add(post.subcategory);
-        acc.tags.push(...post.tags);
-        return acc;
-      },
-      {
-        categories: new Set(),
-        subcategories: new Set(),
-        tags: [],
-      }
-    );
-    filteredPosts.tags = new Set(filteredPosts.tags);
-
-    const notFoundCategories = Object.keys(categoryToNumOfPostsMap).filter(
-      (category) => !filteredPosts.categories.has(category)
-    );
-    const notFoundSubcategories = Object.keys(
-      subcategoryToNumOfPostsMap
-    ).filter((subcategory) => !filteredPosts.subcategories.has(subcategory));
-    const notFoundTags = allTags.filter((tag) => !filteredPosts.tags.has(tag));
-  }, [posts]);
-
   const handleFilterArea = (e) => {
     setArea(e.target.value);
   };
   return (
     <Layout isBlogPost={false}>
-      <section className="max-w-[1440px] padding-x pt-32">
+      <section className="max-container padding-x pt-32">
         <div className="my-5">
           <Select
             options={dateAscendingOptions}
@@ -273,62 +237,116 @@ const BlogPage = ({ location }) => {
                 area === "category" ? "block" : "hidden"
               }`}
             >
-              {categoryOptions.map((categoryOption, index) => (
-                <button
-                  key={index}
-                  value={categoryOption}
-                  onClick={handleCategorySelect}
-                  className={`${
-                    targetCategories.includes(categoryOption)
-                      ? "bg-gray-400"
-                      : "bg-gray-100"
-                  }`}
-                >
-                  {categoryOption}
-                  <span>{categoryToNumOfPostsMap[categoryOption]}</span>
-                </button>
-              ))}
+              <div>
+                {categoryOptions.map((categoryOption, index) => (
+                  <button
+                    key={index}
+                    value={categoryOption}
+                    onClick={handleCategorySelect}
+                    className={`${
+                      targetCategories.includes(categoryOption)
+                        ? "bg-gray-400"
+                        : "bg-gray-100"
+                    }`}
+                  >
+                    {categoryOption}
+                    <span>{categoryToNumOfPostsMap[categoryOption]}</span>
+                  </button>
+                ))}
+              </div>
+              <div>
+                <h5>not found category</h5>
+                {notFoundCategories.map((notFoundCategory, index) => (
+                  <button
+                    key={index}
+                    value={notFoundCategory}
+                    className={`${
+                      targetCategories.includes(notFoundCategory)
+                        ? "bg-gray-400"
+                        : "bg-gray-100"
+                    }`}
+                  >
+                    {notFoundCategory}
+                  </button>
+                ))}
+              </div>
             </div>
             <div
               className={`flex flex-col justify-start items-start ${
                 area === "subcategory" ? "block" : "hidden"
               }`}
             >
-              {subcategoryOptions.map((subcategoryOption, index) => (
-                <button
-                  key={index}
-                  value={subcategoryOption}
-                  onClick={handleSubcategorySelect}
-                  className={`${
-                    targetSubcategories.includes(subcategoryOption)
-                      ? "bg-gray-400"
-                      : "bg-gray-100"
-                  }`}
-                >
-                  {subcategoryOption}
-                  <span>{subcategoryToNumOfPostsMap[subcategoryOption]}</span>
-                </button>
-              ))}
+              <div>
+                {subcategoryOptions.map((subcategoryOption, index) => (
+                  <button
+                    key={index}
+                    value={subcategoryOption}
+                    onClick={handleSubcategorySelect}
+                    className={`${
+                      targetSubcategories.includes(subcategoryOption)
+                        ? "bg-gray-400"
+                        : "bg-gray-100"
+                    }`}
+                  >
+                    {subcategoryOption}
+                    <span>{subcategoryToNumOfPostsMap[subcategoryOption]}</span>
+                  </button>
+                ))}
+              </div>
+              <div>
+                <h5>not found subcategory</h5>
+                {notFoundSubcategories.map((notFoundSubcategory, index) => (
+                  <button
+                    key={index}
+                    value={notFoundSubcategory}
+                    className={`${
+                      targetCategories.includes(notFoundSubcategory)
+                        ? "bg-gray-400"
+                        : "bg-gray-100"
+                    }`}
+                  >
+                    {notFoundSubcategory}
+                  </button>
+                ))}
+              </div>
             </div>
             <div
               className={`flex flex-wrap gap-1 ${
                 area === "tags" ? "block" : "hidden"
               }`}
             >
-              {tagOptions.map((tagOption) => (
-                <button
-                  key={tagOption}
-                  value={tagOption}
-                  className={`${
-                    targetTags.includes(tagOption)
-                      ? "bg-gray-400"
-                      : "bg-gray-100"
-                  }`}
-                  onClick={handleTagSelect}
-                >
-                  {`#${tagOption}`}
-                </button>
-              ))}
+              <div>
+                {tagOptions.map((tagOption) => (
+                  <button
+                    key={tagOption}
+                    value={tagOption}
+                    className={`${
+                      targetTags.includes(tagOption)
+                        ? "bg-gray-400"
+                        : "bg-gray-100"
+                    }`}
+                    onClick={handleTagSelect}
+                  >
+                    {`#${tagOption}`}
+                  </button>
+                ))}
+              </div>
+              <div>
+                <h5>not found tags</h5>
+                {notFoundTags.map((notFoundTags, index) => (
+                  <button
+                    key={index}
+                    value={notFoundTags}
+                    className={`${
+                      targetCategories.includes(notFoundTags)
+                        ? "bg-gray-400"
+                        : "bg-gray-100"
+                    }`}
+                  >
+                    {notFoundTags}
+                  </button>
+                ))}
+              </div>
             </div>
             <hr />
             <div>

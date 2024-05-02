@@ -1,5 +1,15 @@
 import Card from "./Card";
 import Select from "./Select";
-import { useFilterSelect } from "./utils";
+import {
+  useFilterSelect,
+  useNotFoundItems,
+  useFilteredAndSortedPosts,
+} from "./utils";
 
-export { Card, Select, useFilterSelect };
+export {
+  Card,
+  Select,
+  useFilterSelect,
+  useNotFoundItems,
+  useFilteredAndSortedPosts,
+};
