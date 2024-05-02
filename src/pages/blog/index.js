@@ -2,9 +2,8 @@ import React, { useEffect, useState, useMemo } from "react";
 import Layout from "../../components/layout";
 import { useStaticQuery, graphql } from "gatsby";
 import { getImage } from "gatsby-plugin-image";
-import { Card, Select } from "../../components/blogPage/index";
+import { Card, Select, useFilterSelect } from "../../components/blogPage/index";
 import { dateAscendingOptions } from "../../constants/selections";
-import { set } from "date-fns";
 
 const BlogPage = ({ location }) => {
   const {
@@ -131,13 +130,15 @@ const BlogPage = ({ location }) => {
   useEffect(() => {
     setPosts(allPosts);
   }, [allPosts]);
-  console.log(allPosts);
+  // console.log(allPosts);
 
   const [posts, setPosts] = useState(allPosts);
   const [isDateAscending, setIsDateAscending] = useState(false);
-  const [targetCategories, setTargetCategories] = useState([]);
-  const [targetSubcategories, setTargetSubcategories] = useState([]);
-  const [targetTags, setTargetTags] = useState([]);
+  const [targetCategories, setTargetCategories, handleCategorySelect] =
+    useFilterSelect([]);
+  const [targetSubcategories, setTargetSubcategories, handleSubcategorySelect] =
+    useFilterSelect([]);
+  const [targetTags, setTargetTags, handleTagSelect] = useFilterSelect([]);
   const [categoryOptions, setCategoryOptions] = useState(
     Object.keys(categoryToNumOfPostsMap)
   );
@@ -149,44 +150,6 @@ const BlogPage = ({ location }) => {
 
   const handleDateSortSelect = (e) => {
     setIsDateAscending(e.target.value === "true");
-  };
-  const handleCategoryClick = (e) => {
-    const targetCategory = e.target.value;
-    if (targetCategories.includes(targetCategory)) {
-      setTargetCategories((prevTargetCategories) =>
-        prevTargetCategories.filter((category) => category !== targetCategory)
-      );
-    } else {
-      setTargetCategories((prevTargetCategories) => [
-        ...prevTargetCategories,
-        targetCategory,
-      ]);
-    }
-  };
-  const handleSubcategoryClick = (e) => {
-    const targetSubcategory = e.target.value;
-    if (targetSubcategories.includes(targetSubcategory)) {
-      setTargetSubcategories((prevTargetSubcategories) =>
-        prevTargetSubcategories.filter(
-          (subcategory) => subcategory !== targetSubcategory
-        )
-      );
-    } else {
-      setTargetSubcategories((prevTargetSubcategories) => [
-        ...prevTargetSubcategories,
-        targetSubcategory,
-      ]);
-    }
-  };
-  const handleSelectedTags = (e) => {
-    const targetTag = e.target.value;
-    if (targetTags.includes(targetTag)) {
-      setTargetTags((prevTargetTags) =>
-        prevTargetTags.filter((tag) => tag !== targetTag)
-      );
-    } else {
-      setTargetTags((prevTargetTags) => [...prevTargetTags, targetTag]);
-    }
   };
 
   useEffect(() => {
@@ -223,7 +186,6 @@ const BlogPage = ({ location }) => {
         return new Date(b.date) - new Date(a.date);
       }
     });
-    console.log(filteredPosts);
     setPosts(sortedPosts);
   }, [
     targetCategories,
@@ -233,9 +195,32 @@ const BlogPage = ({ location }) => {
     allPosts,
   ]);
 
-  const isTagSelected = (tag) => targetTags.includes(tag);
+  useEffect(() => {
+    const filteredPosts = posts.reduce(
+      (acc, post) => {
+        acc.categories.add(post.category);
+        acc.subcategories.add(post.subcategory);
+        acc.tags.push(...post.tags);
+        return acc;
+      },
+      {
+        categories: new Set(),
+        subcategories: new Set(),
+        tags: [],
+      }
+    );
+    filteredPosts.tags = new Set(filteredPosts.tags);
 
-  const handleArea = (e) => {
+    const notFoundCategories = Object.keys(categoryToNumOfPostsMap).filter(
+      (category) => !filteredPosts.categories.has(category)
+    );
+    const notFoundSubcategories = Object.keys(
+      subcategoryToNumOfPostsMap
+    ).filter((subcategory) => !filteredPosts.subcategories.has(subcategory));
+    const notFoundTags = allTags.filter((tag) => !filteredPosts.tags.has(tag));
+  }, [posts]);
+
+  const handleFilterArea = (e) => {
     setArea(e.target.value);
   };
   return (
@@ -261,21 +246,21 @@ const BlogPage = ({ location }) => {
               <button
                 className="flex items-center px-2 py-1 bg-slate-200 rounded-lg text-lg"
                 value="category"
-                onClick={handleArea}
+                onClick={handleFilterArea}
               >
                 類別
               </button>
               <button
                 className="flex items-center px-2 py-1 bg-slate-200 rounded-lg text-lg"
                 value="subcategory"
-                onClick={handleArea}
+                onClick={handleFilterArea}
               >
                 子類別
               </button>
               <button
                 className="flex items-center"
                 value="tags"
-                onClick={handleArea}
+                onClick={handleFilterArea}
               >
                 標籤
                 <span className="rounded-full inline-block w-6 h-6 bg-red-200">
@@ -292,7 +277,7 @@ const BlogPage = ({ location }) => {
                 <button
                   key={index}
                   value={categoryOption}
-                  onClick={handleCategoryClick}
+                  onClick={handleCategorySelect}
                   className={`${
                     targetCategories.includes(categoryOption)
                       ? "bg-gray-400"
@@ -313,7 +298,7 @@ const BlogPage = ({ location }) => {
                 <button
                   key={index}
                   value={subcategoryOption}
-                  onClick={handleSubcategoryClick}
+                  onClick={handleSubcategorySelect}
                   className={`${
                     targetSubcategories.includes(subcategoryOption)
                       ? "bg-gray-400"
@@ -339,7 +324,7 @@ const BlogPage = ({ location }) => {
                       ? "bg-gray-400"
                       : "bg-gray-100"
                   }`}
-                  onClick={handleSelectedTags}
+                  onClick={handleTagSelect}
                 >
                   {`#${tagOption}`}
                 </button>
