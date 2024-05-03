@@ -2,9 +2,12 @@ import React, { useEffect, useState, useMemo } from "react";
 import Layout from "../../components/layout";
 import { useStaticQuery, graphql } from "gatsby";
 import { getImage } from "gatsby-plugin-image";
+import { FaFilter } from "react-icons/fa";
 import {
   Card,
   Select,
+  AreaSelectButton,
+  AreaBlock,
   useFilterSelect,
   useNotFoundItems,
   useFilteredAndSortedPosts,
@@ -14,6 +17,7 @@ import { dateAscendingOptions } from "../../constants/selections";
 const BlogPage = ({ location }) => {
   const {
     allMdx: { nodes },
+    allContentfulAuthor: { nodes: authors },
   } = useStaticQuery(graphql`
     query {
       allMdx {
@@ -25,7 +29,7 @@ const BlogPage = ({ location }) => {
             date(formatString: "YYYY/MM/DD")
             hero_image {
               childImageSharp {
-                gatsbyImageData(placeholder: BLURRED)
+                gatsbyImageData(placeholder: BLURRED, width: 300)
               }
             }
             slug
@@ -35,8 +39,21 @@ const BlogPage = ({ location }) => {
           excerpt
         }
       }
+      allContentfulAuthor {
+        nodes {
+          image {
+            gatsbyImageData(placeholder: BLURRED)
+          }
+          name
+        }
+      }
     }
   `);
+  const authorToImageMap = Object.fromEntries(
+    authors.map((author) => {
+      return [author.name, getImage(author.image)];
+    })
+  );
   const allPosts = useMemo(
     () =>
       nodes.map((node) => {
@@ -184,8 +201,8 @@ const BlogPage = ({ location }) => {
     }
   }, [location]);
 
-  const handleFilterArea = (e) => {
-    setArea(e.target.value);
+  const handleFilterArea = (area) => {
+    setArea(area);
   };
   return (
     <Layout isBlogPost={false}>
@@ -197,177 +214,71 @@ const BlogPage = ({ location }) => {
             defaultValue={isDateAscending}
           />
         </div>
-        <div className="flex flex-center items-start">
-          <main className="flex flex-col justify-start gap-5 w-full">
+        <div className="flex flex-center items-start gap-5">
+          <main className="flex flex-col justify-start gap-4 w-full">
             {posts.length == 0
               ? "無內容"
               : posts.map((post) => {
-                  return <Card key={post.slug} {...post} />;
+                  return (
+                    <Card
+                      key={post.slug}
+                      author_image={authorToImageMap[post.author]}
+                      {...post}
+                    />
+                  );
                 })}
           </main>
-          <div className="relative shrink-0 w-[300px] p-3 border-[1px]">
+          <aside className="shrink-0 w-[300px] p-3 border-[1px] rounded-lg max-xl:hidden">
+            <h2 className="text-lg font-semibold mb-2">篩選內容</h2>
             <div className="flex items-center gap-2 flex-wrap mb-3">
-              <button
-                className="flex items-center px-2 py-1 bg-slate-200 rounded-lg text-lg"
-                value="category"
-                onClick={handleFilterArea}
-              >
-                類別
-              </button>
-              <button
-                className="flex items-center px-2 py-1 bg-slate-200 rounded-lg text-lg"
-                value="subcategory"
-                onClick={handleFilterArea}
-              >
-                子類別
-              </button>
-              <button
-                className="flex items-center"
-                value="tags"
-                onClick={handleFilterArea}
-              >
-                標籤
-                <span className="rounded-full inline-block w-6 h-6 bg-red-200">
-                  {targetTags.length > 0 && targetTags.length}
-                </span>
-              </button>
+              <AreaSelectButton
+                area={area}
+                label="category"
+                labelName="類別"
+                targetOptions={targetCategories}
+                handleFilterArea={handleFilterArea}
+              />
+              <AreaSelectButton
+                area={area}
+                label="subcategory"
+                labelName="子類別"
+                targetOptions={targetSubcategories}
+                handleFilterArea={handleFilterArea}
+              />
+              <AreaSelectButton
+                area={area}
+                label="tags"
+                labelName="標籤"
+                targetOptions={targetTags}
+                handleFilterArea={handleFilterArea}
+              />
             </div>
-            <div
-              className={`flex flex-col justify-start items-start ${
-                area === "category" ? "block" : "hidden"
-              }`}
-            >
-              <div>
-                {categoryOptions.map((categoryOption, index) => (
-                  <button
-                    key={index}
-                    value={categoryOption}
-                    onClick={handleCategorySelect}
-                    className={`${
-                      targetCategories.includes(categoryOption)
-                        ? "bg-gray-400"
-                        : "bg-gray-100"
-                    }`}
-                  >
-                    {categoryOption}
-                    <span>{categoryToNumOfPostsMap[categoryOption]}</span>
-                  </button>
-                ))}
-              </div>
-              <div>
-                <h5>not found category</h5>
-                {notFoundCategories.map((notFoundCategory, index) => (
-                  <button
-                    key={index}
-                    value={notFoundCategory}
-                    className={`${
-                      targetCategories.includes(notFoundCategory)
-                        ? "bg-gray-400"
-                        : "bg-gray-100"
-                    }`}
-                  >
-                    {notFoundCategory}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div
-              className={`flex flex-col justify-start items-start ${
-                area === "subcategory" ? "block" : "hidden"
-              }`}
-            >
-              <div>
-                {subcategoryOptions.map((subcategoryOption, index) => (
-                  <button
-                    key={index}
-                    value={subcategoryOption}
-                    onClick={handleSubcategorySelect}
-                    className={`${
-                      targetSubcategories.includes(subcategoryOption)
-                        ? "bg-gray-400"
-                        : "bg-gray-100"
-                    }`}
-                  >
-                    {subcategoryOption}
-                    <span>{subcategoryToNumOfPostsMap[subcategoryOption]}</span>
-                  </button>
-                ))}
-              </div>
-              <div>
-                <h5>not found subcategory</h5>
-                {notFoundSubcategories.map((notFoundSubcategory, index) => (
-                  <button
-                    key={index}
-                    value={notFoundSubcategory}
-                    className={`${
-                      targetCategories.includes(notFoundSubcategory)
-                        ? "bg-gray-400"
-                        : "bg-gray-100"
-                    }`}
-                  >
-                    {notFoundSubcategory}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div
-              className={`flex flex-wrap gap-1 ${
-                area === "tags" ? "block" : "hidden"
-              }`}
-            >
-              <div>
-                {tagOptions.map((tagOption) => (
-                  <button
-                    key={tagOption}
-                    value={tagOption}
-                    className={`${
-                      targetTags.includes(tagOption)
-                        ? "bg-gray-400"
-                        : "bg-gray-100"
-                    }`}
-                    onClick={handleTagSelect}
-                  >
-                    {`#${tagOption}`}
-                  </button>
-                ))}
-              </div>
-              <div>
-                <h5>not found tags</h5>
-                {notFoundTags.map((notFoundTags, index) => (
-                  <button
-                    key={index}
-                    value={notFoundTags}
-                    className={`${
-                      targetCategories.includes(notFoundTags)
-                        ? "bg-gray-400"
-                        : "bg-gray-100"
-                    }`}
-                  >
-                    {notFoundTags}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <hr />
-            <div>
-              <div className={`flex flex-wrap gap-1`}>
-                {/* {targetTags.map((tag) => (
-                  <button
-                    key={tag}
-                    value={tag}
-                    className={`p-2 rounded-3xl text-sm font-light ${
-                      isTagSelected(tag)
-                        ? "bg-slate-500 text-white"
-                        : "bg-slate-200"
-                    }`}
-                    onClick={handleSelectedTags}
-                  >
-                    {`#${tag}`}
-                  </button>
-                ))} */}
-              </div>
-            </div>
-          </div>
+            <hr className="mb-3" />
+            <AreaBlock
+              area={area}
+              label="category"
+              targetOptions={targetCategories}
+              options={categoryOptions}
+              notFoundOptions={notFoundCategories}
+              handleAreaSelect={handleCategorySelect}
+            />
+            <AreaBlock
+              area={area}
+              label="subcategory"
+              targetOptions={targetSubcategories}
+              options={subcategoryOptions}
+              notFoundOptions={notFoundSubcategories}
+              handleAreaSelect={handleSubcategorySelect}
+            />
+            <AreaBlock
+              area={area}
+              label="tags"
+              targetOptions={targetTags}
+              options={tagOptions}
+              notFoundOptions={notFoundTags}
+              handleAreaSelect={handleTagSelect}
+            />
+          </aside>
         </div>
       </section>
     </Layout>
