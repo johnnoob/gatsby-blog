@@ -2,7 +2,6 @@ import React, { useEffect, useState, useMemo } from "react";
 import Layout from "../../components/layout";
 import { useStaticQuery, graphql } from "gatsby";
 import { getImage } from "gatsby-plugin-image";
-import { FaFilter } from "react-icons/fa";
 import {
   Card,
   Select,
@@ -127,7 +126,6 @@ const BlogPage = ({ location }) => {
       ),
     [allPosts]
   );
-  // console.log(categoryToSubcategoryToTagsMap);
 
   const { categories } = categoryToSubcategoryToTagsMap;
   const categoryToNumOfPostsMap = useMemo(() => {
@@ -138,7 +136,7 @@ const BlogPage = ({ location }) => {
 
   const subcategoryToNumOfPostsMap = useMemo(() => {
     const subcategoryMap = {};
-    for (const [key, value] of Object.entries(
+    for (const value of Object.values(
       categoryToSubcategoryToTagsMap.categories
     )) {
       for (const [subkey, subvalue] of Object.entries(value.subcategories)) {
@@ -181,14 +179,10 @@ const BlogPage = ({ location }) => {
       categoryToNumOfPostsMap,
       subcategoryToNumOfPostsMap
     );
-  console.log(notFoundCategories, notFoundSubcategories, notFoundTags);
-  const [categoryOptions, setCategoryOptions] = useState(
-    Object.keys(categoryToNumOfPostsMap)
-  );
-  const [subcategoryOptions, setSubcategoryOptions] = useState(
-    Object.keys(subcategoryToNumOfPostsMap)
-  );
-  const [tagOptions, setTagOptions] = useState(allTags);
+
+  const allCategories = Object.keys(categoryToNumOfPostsMap);
+  const allSubcategories = Object.keys(subcategoryToNumOfPostsMap);
+
   const [area, setArea] = useState("category");
   const handleDateSortSelect = (e) => {
     setIsDateAscending(e.target.value === "true");
@@ -216,7 +210,7 @@ const BlogPage = ({ location }) => {
         </div>
         <div className="flex flex-center items-start gap-5">
           <main className="flex flex-col justify-start gap-4 w-full">
-            {posts.length == 0
+            {posts.length === 0
               ? "無內容"
               : posts.map((post) => {
                   return (
@@ -258,7 +252,7 @@ const BlogPage = ({ location }) => {
               area={area}
               label="category"
               targetOptions={targetCategories}
-              options={categoryOptions}
+              options={allCategories}
               notFoundOptions={notFoundCategories}
               handleAreaSelect={handleCategorySelect}
             />
@@ -266,7 +260,7 @@ const BlogPage = ({ location }) => {
               area={area}
               label="subcategory"
               targetOptions={targetSubcategories}
-              options={subcategoryOptions}
+              options={allSubcategories}
               notFoundOptions={notFoundSubcategories}
               handleAreaSelect={handleSubcategorySelect}
             />
@@ -274,7 +268,7 @@ const BlogPage = ({ location }) => {
               area={area}
               label="tags"
               targetOptions={targetTags}
-              options={tagOptions}
+              options={allTags}
               notFoundOptions={notFoundTags}
               handleAreaSelect={handleTagSelect}
             />

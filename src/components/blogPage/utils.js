@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const isArraySubset = (subset, superset) => {
   return subset.some((element) => superset.includes(element));
@@ -48,50 +48,61 @@ export const useNotFoundItems = (
     );
   };
 
-  const notFoundGenerator = (filterType) => {
-    let filteredPostsTest;
-    if (filterType === "tags") {
-      filteredPostsTest = allPosts.filter((post) => {
-        if (targetCategories.length === 0) return true;
-        return targetCategories.includes(post.category);
-      });
-      filteredPostsTest = filteredPostsTest.filter((post) => {
-        if (targetSubcategories.length === 0) return true;
-        return targetSubcategories.includes(post.subcategory);
-      });
-      const filteredPostsObject =
-        generateFilteredPostsObject(filteredPostsTest);
-      return allTags.filter((tag) => !filteredPostsObject.tags.includes(tag));
-    } else if (filterType === "categories") {
-      filteredPostsTest = allPosts.filter((post) => {
-        if (targetSubcategories.length === 0) return true;
-        return targetSubcategories.includes(post.subcategory);
-      });
-      filteredPostsTest = filteredPostsTest.filter((post) => {
-        if (targetTags.length === 0) return true;
-        return isArraySubset(targetTags, post.tags);
-      });
-      const filteredPostsObject =
-        generateFilteredPostsObject(filteredPostsTest);
-      return Object.keys(categoryToNumOfPostsMap).filter(
-        (category) => !filteredPostsObject.categories.has(category)
-      );
-    } else {
-      filteredPostsTest = allPosts.filter((post) => {
-        if (targetCategories.length === 0) return true;
-        return targetCategories.includes(post.category);
-      });
-      filteredPostsTest = filteredPostsTest.filter((post) => {
-        if (targetTags.length === 0) return true;
-        return isArraySubset(targetTags, post.tags);
-      });
-      const filteredPostsObject =
-        generateFilteredPostsObject(filteredPostsTest);
-      return Object.keys(subcategoryToNumOfPostsMap).filter(
-        (subcategory) => !filteredPostsObject.subcategories.has(subcategory)
-      );
-    }
-  };
+  const notFoundGenerator = useCallback(
+    (filterType) => {
+      let filteredPostsTest;
+      if (filterType === "tags") {
+        filteredPostsTest = allPosts.filter((post) => {
+          if (targetCategories.length === 0) return true;
+          return targetCategories.includes(post.category);
+        });
+        filteredPostsTest = filteredPostsTest.filter((post) => {
+          if (targetSubcategories.length === 0) return true;
+          return targetSubcategories.includes(post.subcategory);
+        });
+        const filteredPostsObject =
+          generateFilteredPostsObject(filteredPostsTest);
+        return allTags.filter((tag) => !filteredPostsObject.tags.includes(tag));
+      } else if (filterType === "categories") {
+        filteredPostsTest = allPosts.filter((post) => {
+          if (targetSubcategories.length === 0) return true;
+          return targetSubcategories.includes(post.subcategory);
+        });
+        filteredPostsTest = filteredPostsTest.filter((post) => {
+          if (targetTags.length === 0) return true;
+          return isArraySubset(targetTags, post.tags);
+        });
+        const filteredPostsObject =
+          generateFilteredPostsObject(filteredPostsTest);
+        return Object.keys(categoryToNumOfPostsMap).filter(
+          (category) => !filteredPostsObject.categories.has(category)
+        );
+      } else {
+        filteredPostsTest = allPosts.filter((post) => {
+          if (targetCategories.length === 0) return true;
+          return targetCategories.includes(post.category);
+        });
+        filteredPostsTest = filteredPostsTest.filter((post) => {
+          if (targetTags.length === 0) return true;
+          return isArraySubset(targetTags, post.tags);
+        });
+        const filteredPostsObject =
+          generateFilteredPostsObject(filteredPostsTest);
+        return Object.keys(subcategoryToNumOfPostsMap).filter(
+          (subcategory) => !filteredPostsObject.subcategories.has(subcategory)
+        );
+      }
+    },
+    [
+      allPosts,
+      allTags,
+      targetCategories,
+      targetSubcategories,
+      targetTags,
+      categoryToNumOfPostsMap,
+      subcategoryToNumOfPostsMap,
+    ]
+  );
 
   const [notFoundCategories, setNotFoundCategories] = useState([]);
   const [notFoundSubcategories, setNotFoundSubcategories] = useState([]);
@@ -110,6 +121,7 @@ export const useNotFoundItems = (
     allTags,
     categoryToNumOfPostsMap,
     subcategoryToNumOfPostsMap,
+    notFoundGenerator,
   ]);
 
   return { notFoundCategories, notFoundSubcategories, notFoundTags };

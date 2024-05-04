@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Button from "./Button";
 import PostCardBig from "./TopPostsCardBig";
 import PostCardSmall from "./TopPostCardSmall";
-import { useStaticQuery, graphql, Link } from "gatsby";
+import { useStaticQuery, graphql } from "gatsby";
 import { getImage } from "gatsby-plugin-image";
-import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 
 const TopPosts = () => {
   const data = useStaticQuery(graphql`
