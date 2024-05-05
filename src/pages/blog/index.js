@@ -12,6 +12,7 @@ import {
   useFilteredAndSortedPosts,
 } from "../../components/blogPage/index";
 import { dateAscendingOptions } from "../../constants/selections";
+import { FaArrowRotateRight, FaMagnifyingGlass } from "react-icons/fa6";
 
 const BlogPage = ({ location }) => {
   const {
@@ -198,6 +199,7 @@ const BlogPage = ({ location }) => {
   const handleFilterArea = (area) => {
     setArea(area);
   };
+  const handleReset = (area) => {};
   return (
     <Layout isBlogPost={false}>
       <section className="max-container padding-x pt-32">
@@ -246,6 +248,24 @@ const BlogPage = ({ location }) => {
                 targetOptions={targetTags}
                 handleFilterArea={handleFilterArea}
               />
+            </div>
+            <hr className="mb-3" />
+            <div className="mb-3 flex items-center gap-2">
+              <button
+                className="bg-gray-200 flex justify-center items-center gap-2 px-2 py-1 rounded-2xl text-sm shrink-0"
+                onClick={handleReset}
+              >
+                <FaArrowRotateRight />
+                <p>重置條件</p>
+              </button>
+              <div className="relative text-sm">
+                <FaMagnifyingGlass className="absolute top-1/2 left-2 -translate-y-1/2 text-gray-300" />
+                <input
+                  type="text"
+                  className="focus:outline-none ring-0 bg-transparent pl-6 pr-2 border-[1px] rounded-full py-1 max-w-[160px]"
+                  placeholder={"以名稱過濾條件"}
+                />
+              </div>
             </div>
             <hr className="mb-3" />
             <AreaBlock
