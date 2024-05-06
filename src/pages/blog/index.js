@@ -5,14 +5,14 @@ import { getImage } from "gatsby-plugin-image";
 import {
   Card,
   Select,
-  AreaSelectButton,
-  AreaBlock,
+  FilterSidebar,
+  FilterSidebarSm,
   useFilterSelect,
   useNotFoundItems,
   useFilteredAndSortedPosts,
 } from "../../components/blogPage/index";
 import { dateAscendingOptions } from "../../constants/selections";
-import { FaArrowRotateRight, FaMagnifyingGlass } from "react-icons/fa6";
+import { FaFilter } from "react-icons/fa6";
 
 const BlogPage = ({ location }) => {
   const {
@@ -185,6 +185,11 @@ const BlogPage = ({ location }) => {
   const allSubcategories = Object.keys(subcategoryToNumOfPostsMap);
 
   const [area, setArea] = useState("category");
+  const [categoryOptions, setCategoryOptions] = useState(allCategories);
+  const [subcategoryOptions, setSubcategoryOptions] =
+    useState(allSubcategories);
+  const [tagOptions, setTagOptions] = useState(allTags);
+  const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false);
   const handleDateSortSelect = (e) => {
     setIsDateAscending(e.target.value === "true");
   };
@@ -199,16 +204,67 @@ const BlogPage = ({ location }) => {
   const handleFilterArea = (area) => {
     setArea(area);
   };
-  const handleReset = (area) => {};
+  const handleReset = (area) => {
+    switch (area) {
+      case "category":
+        setTargetCategories([]);
+        break;
+      case "subcategory":
+        setTargetSubcategories([]);
+        break;
+      case "tags":
+        setTargetTags([]);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleAreaOptionsByInput = (e, area) => {
+    const searchInput = e.target.value;
+    switch (area) {
+      case "category":
+        setCategoryOptions(
+          allCategories.filter((category) =>
+            category.toLowerCase().includes(searchInput.toLowerCase())
+          )
+        );
+        break;
+      case "subcategory":
+        setSubcategoryOptions(
+          allSubcategories.filter((subcategory) =>
+            subcategory.toLowerCase().includes(searchInput.toLowerCase())
+          )
+        );
+        break;
+      case "tags":
+        setTagOptions(
+          allTags.filter((tag) =>
+            tag.toLowerCase().includes(searchInput.toLowerCase())
+          )
+        );
+        break;
+      default:
+        break;
+    }
+  };
+  const handleFilterSidebarOpen = () => setIsFilterSidebarOpen((prev) => !prev);
   return (
     <Layout isBlogPost={false}>
       <section className="max-container padding-x pt-32">
-        <div className="my-5">
+        <div className="my-5 flex items-center gap-2">
           <Select
             options={dateAscendingOptions}
             handleSelect={handleDateSortSelect}
             defaultValue={isDateAscending}
           />
+          <button
+            className="flex gap-1 items-center px-2 py-1 rounded-lg border-[1px]"
+            onClick={handleFilterSidebarOpen}
+          >
+            <FaFilter />
+            <p>篩選內容</p>
+          </button>
         </div>
         <div className="flex flex-center items-start gap-5">
           <main className="flex flex-col justify-start gap-4 w-full">
@@ -224,75 +280,44 @@ const BlogPage = ({ location }) => {
                   );
                 })}
           </main>
-          <aside className="shrink-0 w-[300px] p-3 border-[1px] rounded-lg max-xl:hidden">
-            <h2 className="text-lg font-semibold mb-2">篩選內容</h2>
-            <div className="flex items-center gap-2 flex-wrap mb-3">
-              <AreaSelectButton
-                area={area}
-                label="category"
-                labelName="類別"
-                targetOptions={targetCategories}
-                handleFilterArea={handleFilterArea}
-              />
-              <AreaSelectButton
-                area={area}
-                label="subcategory"
-                labelName="子類別"
-                targetOptions={targetSubcategories}
-                handleFilterArea={handleFilterArea}
-              />
-              <AreaSelectButton
-                area={area}
-                label="tags"
-                labelName="標籤"
-                targetOptions={targetTags}
-                handleFilterArea={handleFilterArea}
-              />
-            </div>
-            <hr className="mb-3" />
-            <div className="mb-3 flex items-center gap-2">
-              <button
-                className="bg-gray-200 flex justify-center items-center gap-2 px-2 py-1 rounded-2xl text-sm shrink-0"
-                onClick={handleReset}
-              >
-                <FaArrowRotateRight />
-                <p>重置條件</p>
-              </button>
-              <div className="relative text-sm">
-                <FaMagnifyingGlass className="absolute top-1/2 left-2 -translate-y-1/2 text-gray-300" />
-                <input
-                  type="text"
-                  className="focus:outline-none ring-0 bg-transparent pl-6 pr-2 border-[1px] rounded-full py-1 max-w-[160px]"
-                  placeholder={"以名稱過濾條件"}
-                />
-              </div>
-            </div>
-            <hr className="mb-3" />
-            <AreaBlock
-              area={area}
-              label="category"
-              targetOptions={targetCategories}
-              options={allCategories}
-              notFoundOptions={notFoundCategories}
-              handleAreaSelect={handleCategorySelect}
-            />
-            <AreaBlock
-              area={area}
-              label="subcategory"
-              targetOptions={targetSubcategories}
-              options={allSubcategories}
-              notFoundOptions={notFoundSubcategories}
-              handleAreaSelect={handleSubcategorySelect}
-            />
-            <AreaBlock
-              area={area}
-              label="tags"
-              targetOptions={targetTags}
-              options={allTags}
-              notFoundOptions={notFoundTags}
-              handleAreaSelect={handleTagSelect}
-            />
-          </aside>
+          <FilterSidebar
+            area={area}
+            targetCategories={targetCategories}
+            targetSubcategories={targetSubcategories}
+            targetTags={targetTags}
+            handleFilterArea={handleFilterArea}
+            handleReset={handleReset}
+            handleAreaOptionsByInput={handleAreaOptionsByInput}
+            notFoundCategories={notFoundCategories}
+            notFoundSubcategories={notFoundSubcategories}
+            notFoundTags={notFoundTags}
+            categoryOptions={categoryOptions}
+            subcategoryOptions={subcategoryOptions}
+            tagOptions={tagOptions}
+            handleCategorySelect={handleCategorySelect}
+            handleSubcategorySelect={handleSubcategorySelect}
+            handleTagSelect={handleTagSelect}
+          />
+          <FilterSidebarSm
+            area={area}
+            targetCategories={targetCategories}
+            targetSubcategories={targetSubcategories}
+            targetTags={targetTags}
+            handleFilterArea={handleFilterArea}
+            handleReset={handleReset}
+            handleAreaOptionsByInput={handleAreaOptionsByInput}
+            notFoundCategories={notFoundCategories}
+            notFoundSubcategories={notFoundSubcategories}
+            notFoundTags={notFoundTags}
+            categoryOptions={categoryOptions}
+            subcategoryOptions={subcategoryOptions}
+            tagOptions={tagOptions}
+            handleCategorySelect={handleCategorySelect}
+            handleSubcategorySelect={handleSubcategorySelect}
+            handleTagSelect={handleTagSelect}
+            isFilterSidebarOpen={isFilterSidebarOpen}
+            handleFilterSidebarOpen={handleFilterSidebarOpen}
+          />
         </div>
       </section>
     </Layout>

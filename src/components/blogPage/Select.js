@@ -5,7 +5,7 @@ const Select = ({ options, handleSelect, defaultValue }) => {
   return (
     <div className="relative w-[100px]">
       <select
-        className="py-1 pl-2 pr-6 border-2 text-gray-p rounded-lg appearance-none focus:outline-none"
+        className="py-1 pl-2 pr-6 border-[1px] text-gray-p rounded-lg appearance-none focus:outline-none"
         onChange={handleSelect}
         defaultValue={defaultValue}
       >

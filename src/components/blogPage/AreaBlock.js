@@ -8,6 +8,9 @@ const AreaBlock = ({
   notFoundOptions,
   handleAreaSelect,
 }) => {
+  const filteredNotFoundOptions = options.filter((option) =>
+    notFoundOptions.includes(option)
+  );
   return (
     <>
       <div
@@ -15,27 +18,37 @@ const AreaBlock = ({
           area === label ? "block" : "hidden"
         }`}
       >
-        <div className="flex flex-wrap gap-2">
-          {options
-            .filter((option) => {
-              return !notFoundOptions.includes(option);
-            })
-            .map((option, index) => (
-              <button
-                key={index}
-                value={option}
-                onClick={handleAreaSelect}
-                className={`px-2 py-1 rounded-2xl ${
-                  targetOptions.includes(option)
-                    ? "bg-black text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                {option}
-              </button>
-            ))}
-        </div>
-        <div className={`w-full ${notFoundOptions.length === 0 && "hidden"}`}>
+        {options.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {options
+              .filter((option) => {
+                return !notFoundOptions.includes(option);
+              })
+              .map((option, index) => (
+                <button
+                  key={index}
+                  value={option}
+                  onClick={handleAreaSelect}
+                  className={`px-2 py-1 rounded-2xl ${
+                    targetOptions.includes(option)
+                      ? "bg-black text-white"
+                      : "bg-gray-200"
+                  }`}
+                >
+                  {option}
+                </button>
+              ))}
+          </div>
+        ) : (
+          <div className="flex justify-center items-center w-full rounded-xl border-[1px] h-28 text-gray-500">
+            未找到相符合的內容
+          </div>
+        )}
+        <div
+          className={`w-full ${
+            filteredNotFoundOptions.length === 0 && "hidden"
+          }`}
+        >
           <div className="relative">
             <div className="my-2 px-4 py-1 bg-white text-gray-500 w-fit mx-auto">
               無相符內容
@@ -43,7 +56,7 @@ const AreaBlock = ({
             <hr className="absolute top-1/2 w-full h-[px] bg-slate-300 -z-10" />
           </div>
           <div className="flex flex-wrap gap-2">
-            {notFoundOptions.map((notFoundOption, index) => (
+            {filteredNotFoundOptions.map((notFoundOption, index) => (
               <button
                 key={index}
                 value={notFoundOption}
