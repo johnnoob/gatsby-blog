@@ -34,7 +34,7 @@ const FilterSidebarSm = ({
   };
   return (
     <aside className={`${!isFilterSidebarOpen && "hidden"}`}>
-      <div className="bg-white fixed top-0 left-0 w-full p-3 z-40 overflow-y-scroll h-full lg:hidden overscroll-contain">
+      <div className="bg-white fixed top-0 left-0 w-full p-3 z-40 overflow-y-scroll h-[calc(100%-68px)] lg:hidden overscroll-contain">
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-semibold mb-2">篩選內容</h2>
           <button onClick={handleFilterSidebarOpen}>
