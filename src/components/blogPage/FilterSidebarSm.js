@@ -34,7 +34,7 @@ const FilterSidebarSm = ({
   };
   return (
     <aside className={`${!isFilterSidebarOpen && "hidden"}`}>
-      <div className="fixed top-0 left-0 w-full p-3 z-40 overflow-y-scroll h-[calc(100%-60px)] bg-white overscroll-contain lg:hidden">
+      <div className="bg-white fixed top-0 left-0 w-full p-3 z-40 overflow-y-scroll h-[calc(100%-60px)]  lg:hidden overscroll-contain">
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-semibold mb-2">篩選內容</h2>
           <button onClick={handleFilterSidebarOpen}>
@@ -109,7 +109,7 @@ const FilterSidebarSm = ({
           handleAreaSelect={handleTagSelect}
         />
       </div>
-      <div className="fixed left-0 bottom-0 h-[65px] w-full z-50 bg-white px-6 border-t-[1px] lg:hidden">
+      <div className="fixed left-0 bottom-0 h-[68px] w-full z-50 bg-white px-6 border-t-[1px] lg:hidden">
         <button className="flex justify-center items-center gap-2 rounded-lg bg-gray-100 w-full py-2 mt-3">
           <FaCheck />
           <p>篩選</p>
