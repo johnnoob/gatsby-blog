@@ -1,5 +1,5 @@
 import React from "react";
-import { AreaSelectButton, AreaBlock } from "./index";
+import { AreaSelectButton, AreaBlock, SearchInput } from "./index";
 import {
   FaArrowRotateRight,
   FaMagnifyingGlass,
@@ -34,7 +34,7 @@ const FilterSidebarSm = ({
   };
   return (
     <aside className={`${!isFilterSidebarOpen && "hidden"}`}>
-      <div className="bg-white fixed top-0 left-0 w-full p-3 z-40 overflow-y-scroll h-[calc(100%-68px)] lg:hidden overscroll-contain">
+      <div className="bg-white fixed top-0 left-0 w-full p-3 z-40 overflow-y-scroll h-[calc(100vh-68px)] lg:hidden overscroll-contain">
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-semibold mb-2">篩選內容</h2>
           <button onClick={handleFilterSidebarOpen}>
@@ -73,15 +73,12 @@ const FilterSidebarSm = ({
             <FaArrowRotateRight />
             <p>重置{filterAreaToStrMap[area]}</p>
           </button>
-          <div className="relative text-sm">
-            <FaMagnifyingGlass className="absolute top-1/2 left-2 -translate-y-1/2 text-gray-300" />
-            <input
-              type="text"
-              className="focus:outline-none ring-0 bg-transparent pl-6 pr-2 border-[1px] rounded-full py-1 max-w-[160px]"
-              onChange={(e) => handleAreaOptionsByInput(e, area)}
-              placeholder={`以名稱過濾${filterAreaToStrMap[area]}`}
-            />
-          </div>
+          <SearchInput
+            label={filterAreaToStrMap[area]}
+            handleChange={(e) => handleAreaOptionsByInput(e, area)}
+          >
+            <FaMagnifyingGlass />
+          </SearchInput>
         </div>
         <hr className="mb-3" />
         <AreaBlock

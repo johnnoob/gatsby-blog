@@ -3,9 +3,9 @@ import { FaAngleDown } from "react-icons/fa6";
 
 const Select = ({ options, handleSelect, defaultValue }) => {
   return (
-    <div className="relative w-[100px]">
+    <div className="relative max-w-[110px]">
       <select
-        className="py-1 pl-2 pr-6 border-[1px] text-gray-p rounded-lg appearance-none focus:outline-none"
+        className="text-sm py-1 pl-2 pr-6 border-[1px] text-gray-p rounded-lg appearance-none focus:outline-none"
         onChange={handleSelect}
         defaultValue={defaultValue}
       >

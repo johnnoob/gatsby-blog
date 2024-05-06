@@ -7,12 +7,13 @@ import {
   Select,
   FilterSidebar,
   FilterSidebarSm,
+  SearchInput,
   useFilterSelect,
   useNotFoundItems,
   useFilteredAndSortedPosts,
 } from "../../components/blogPage/index";
 import { dateAscendingOptions } from "../../constants/selections";
-import { FaFilter } from "react-icons/fa6";
+import { FaFilter, FaBook } from "react-icons/fa6";
 
 const BlogPage = ({ location }) => {
   const {
@@ -162,16 +163,19 @@ const BlogPage = ({ location }) => {
   const [targetSubcategories, setTargetSubcategories, handleSubcategorySelect] =
     useFilterSelect([]);
   const [targetTags, setTargetTags, handleTagSelect] = useFilterSelect([]);
+  const [searchInput, setSearchInput] = useState("");
   const posts = useFilteredAndSortedPosts(
     allPosts,
     targetCategories,
     targetSubcategories,
     targetTags,
-    isDateAscending
+    isDateAscending,
+    searchInput
   );
+
   const { notFoundCategories, notFoundSubcategories, notFoundTags } =
     useNotFoundItems(
-      posts,
+      allPosts,
       targetCategories,
       targetSubcategories,
       targetTags,
@@ -249,6 +253,10 @@ const BlogPage = ({ location }) => {
     }
   };
   const handleFilterSidebarOpen = () => setIsFilterSidebarOpen((prev) => !prev);
+
+  const handleSearchPostByInput = (e) => {
+    setSearchInput(e.target.value);
+  };
   return (
     <Layout isBlogPost={false}>
       <section className="max-container padding-x pt-32">
@@ -259,12 +267,18 @@ const BlogPage = ({ location }) => {
             defaultValue={isDateAscending}
           />
           <button
-            className="flex gap-1 items-center px-2 py-1 rounded-lg border-[1px]"
+            className="flex gap-1 items-center px-2 py-1 rounded-lg border-[1px] lg:hidden shrink-0 text-sm"
             onClick={handleFilterSidebarOpen}
           >
             <FaFilter />
             <p>篩選內容</p>
           </button>
+          <SearchInput
+            label="PO文"
+            handleChange={(e) => handleSearchPostByInput(e)}
+          >
+            <FaBook />
+          </SearchInput>
         </div>
         <div className="flex flex-center items-start gap-5">
           <main className="flex flex-col justify-start gap-4 w-full">

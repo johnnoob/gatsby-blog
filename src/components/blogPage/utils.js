@@ -132,7 +132,8 @@ export const useFilteredAndSortedPosts = (
   targetCategories,
   targetSubcategories,
   targetTags,
-  isDateAscending
+  isDateAscending,
+  searchInput
 ) => {
   const [posts, setPosts] = useState([]);
 
@@ -159,14 +160,18 @@ export const useFilteredAndSortedPosts = (
         return new Date(b.date) - new Date(a.date);
       }
     });
+    const searchedPosts = sortedPosts.filter((post) =>
+      post.title.toLowerCase().includes(searchInput.toLowerCase())
+    );
 
-    setPosts(sortedPosts);
+    setPosts(searchedPosts);
   }, [
     allPosts,
     targetCategories,
     targetSubcategories,
     targetTags,
     isDateAscending,
+    searchInput,
   ]);
 
   return posts;
