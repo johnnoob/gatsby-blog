@@ -4,8 +4,10 @@ import TopPosts from "../components/TopPostsModified";
 import RecentPosts from "../components/RecentPosts";
 import Layout from "../components/layout";
 import Seo from "../components/Seo";
+import * as contentful from "contentful-management";
 
 const IndexPage = () => {
+  console.log(contentful);
   return (
     <Layout isBlogPost={false}>
       <section>
