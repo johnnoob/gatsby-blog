@@ -4,9 +4,15 @@ import TopPosts from "../components/TopPostsModified";
 import RecentPosts from "../components/RecentPosts";
 import Layout from "../components/layout";
 import Seo from "../components/Seo";
-import { SignedIn } from "gatsby-plugin-clerk";
+import { useUser } from "gatsby-plugin-clerk";
 
 const IndexPage = () => {
+  const { user, isSignedIn } = useUser();
+  console.log(isSignedIn);
+  console.log(user?.id);
+  if (user?.id !== "haha") {
+    console.log("白吃白喝");
+  }
   return (
     <Layout isBlogPost={false}>
       <section>
