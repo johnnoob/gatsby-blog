@@ -4,9 +4,9 @@ import TopPosts from "../components/TopPostsModified";
 import RecentPosts from "../components/RecentPosts";
 import Layout from "../components/layout";
 import Seo from "../components/Seo";
+import { SignedIn } from "gatsby-plugin-clerk";
 
 const IndexPage = () => {
-  console.log("haha");
   return (
     <Layout isBlogPost={false}>
       <section>

@@ -10,6 +10,7 @@ module.exports = {
     siteUrl: `https://www.yourdomain.tld`,
   },
   plugins: [
+    "gatsby-plugin-clerk",
     "gatsby-plugin-postcss",
     {
       resolve: `gatsby-source-contentful`,

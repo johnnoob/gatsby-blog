@@ -8,6 +8,7 @@ import {
   FilterSidebar,
   FilterSidebarSm,
   SearchInput,
+  EmptyBlock,
   useFilterSelect,
   useNotFoundItems,
   useFilteredAndSortedPosts,
@@ -282,17 +283,19 @@ const BlogPage = ({ location }) => {
         </div>
         <div className="flex flex-center items-start gap-5">
           <main className="flex flex-col justify-start gap-4 w-full">
-            {posts.length === 0
-              ? "無內容"
-              : posts.map((post) => {
-                  return (
-                    <Card
-                      key={post.slug}
-                      author_image={authorToImageMap[post.author]}
-                      {...post}
-                    />
-                  );
-                })}
+            {posts.length === 0 ? (
+              <EmptyBlock />
+            ) : (
+              posts.map((post) => {
+                return (
+                  <Card
+                    key={post.slug}
+                    author_image={authorToImageMap[post.author]}
+                    {...post}
+                  />
+                );
+              })
+            )}
           </main>
           <FilterSidebar
             area={area}
