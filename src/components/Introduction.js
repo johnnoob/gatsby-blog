@@ -8,6 +8,10 @@ const Introduction = () => {
       id="introduction"
       className=" bg-black text-white flex justify-center gap-4 max-lg:flex-col-reverse max-lg:justify-start max-lg:h-5/6 h-5/6"
     >
+      <div className="h-screen w-full text-3xl">
+        <p>網頁變更框架，捨棄此網頁的Gatsby js改採最新的Astro js框架，請大家持續關注、支持!<p>
+        <a href="https://astro-blog-john.netlify.app/" className="text-3xl">新網站連結</a>
+      </div>
       <div className="flex flex-col justify-center gap-8 pt-[200px] padding-b padding-l max-lg:padding-r max-lg:pt-1 max-lg:pb-6 max-lg:gap-4">
         <div className="flex flex-col justify-center items-start flex-1">
           <div className="mb-2">
